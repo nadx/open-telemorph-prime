@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.title}}</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>{{.title}}</h1>
+            <nav class="nav">
+                <a href="/" class="nav-link active">Home</a>
+                <a href="/dashboard" class="nav-link">Dashboard</a>
+                <a href="/metrics" class="nav-link">Metrics</a>
+                <a href="/traces" class="nav-link">Traces</a>
+                <a href="/logs" class="nav-link">Logs</a>
+            </nav>
+        </header>
+
+        <main class="main">
+            <div class="welcome">
+                <h2>Welcome to Open-Telemorph-Prime</h2>
+                <p>A simplified observability platform for home users and developers.</p>
+                
+                <div class="features">
+                    <div class="feature-card">
+                        <h3>📊 Metrics</h3>
+                        <p>View and query your application metrics with PromQL-like syntax.</p>
+                        <a href="/metrics" class="btn">Explore Metrics</a>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h3>🔍 Traces</h3>
+                        <p>Trace requests across your distributed systems and identify bottlenecks.</p>
+                        <a href="/traces" class="btn">View Traces</a>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <h3>📝 Logs</h3>
+                        <p>Search and filter through your application logs with powerful queries.</p>
+                        <a href="/logs" class="btn">Browse Logs</a>
+                    </div>
+                </div>
+
+                <div class="quick-start">
+                    <h3>Quick Start</h3>
+                    <p>Send telemetry data to your Open-Telemorph-Prime instance:</p>
+                    <div class="code-block">
+                        <code>
+                            # HTTP endpoint<br>
+                            curl -X POST http://localhost:8080/v1/traces \<br>
+                            &nbsp;&nbsp;-H "Content-Type: application/json" \<br>
+                            &nbsp;&nbsp;-d '{"resourceSpans": [...]}'
+                        </code>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2024 Open-Telemorph-Prime. Made with ❤️ for developers.</p>
+        </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
