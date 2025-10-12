@@ -23,7 +23,7 @@
                         <circle cx="11" cy="11" r="8"></circle>
                         <path d="m21 21-4.35-4.35"></path>
                     </svg>
-                    <input type="text" placeholder="Search logs..." class="search-input" />
+                    <input type="text" placeholder="Search services..." class="search-input" />
                 </div>
             </div>
             
@@ -103,7 +103,7 @@
                             </svg>
                             <span>Traces</span>
                         </a>
-                        <a href="/logs" class="nav-item active">
+                        <a href="/logs" class="nav-item">
                             <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                                 <polyline points="14,2 14,8 20,8"></polyline>
@@ -113,7 +113,7 @@
                             </svg>
                             <span>Logs</span>
                         </a>
-                        <a href="/services" class="nav-item">
+                        <a href="/services" class="nav-item active">
                             <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="12" cy="12" r="3"></circle>
                                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -156,8 +156,8 @@
             <main class="app-main">
                 <div class="page-header">
                     <div>
-                        <h1 class="page-title">Logs Viewer</h1>
-                        <p class="page-description">Search and analyze your application logs</p>
+                        <h1 class="page-title">Services</h1>
+                        <p class="page-description">Monitor and manage your application services</p>
                     </div>
                     <div class="page-actions">
                         <button class="btn btn-outline btn-sm">
@@ -167,7 +167,7 @@
                             </svg>
                             Last 1h
                         </button>
-                        <button class="btn btn-primary btn-sm" onclick="refreshLogs()">
+                        <button class="btn btn-primary btn-sm">
                             <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M23 4v6h-6"></path>
                                 <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
@@ -178,94 +178,100 @@
                 </div>
 
                 <div class="page-content">
-                    <div class="logs-viewer">
-                        <!-- Filters -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Filters</h3>
+                    <div class="services-overview">
+                        <div class="services-stats">
+                            <div class="metric-card">
+                                <div class="metric-card-header">
+                                    <h3 class="metric-card-title">Total Services</h3>
+                                    <svg class="metric-card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                                    </svg>
+                                </div>
+                                <div id="total-services" class="metric-card-value">-</div>
+                                <div class="metric-card-change positive">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                                        <polyline points="17 6 23 6 23 12"></polyline>
+                                    </svg>
+                                    +2 this week
+                                </div>
                             </div>
-                            <div class="card-content">
-                                <div class="filters-grid">
-                                    <div class="form-group">
-                                        <label class="form-label">Service</label>
-                                        <select class="form-select" id="service-filter">
-                                            <option value="">All Services</option>
-                                            <option value="api-gateway">API Gateway</option>
-                                            <option value="payment-service">Payment Service</option>
-                                            <option value="user-service">User Service</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Level</label>
-                                        <select class="form-select" id="level-filter">
-                                            <option value="">All Levels</option>
-                                            <option value="DEBUG">DEBUG</option>
-                                            <option value="INFO">INFO</option>
-                                            <option value="WARN">WARN</option>
-                                            <option value="ERROR">ERROR</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Time Range</label>
-                                        <select class="form-select" id="time-range">
-                                            <option value="1h">Last 1 hour</option>
-                                            <option value="6h">Last 6 hours</option>
-                                            <option value="24h">Last 24 hours</option>
-                                            <option value="7d">Last 7 days</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Limit</label>
-                                        <input type="number" class="form-input" id="limit-filter" value="100" />
-                                    </div>
-                                    <div class="form-group">
-                                        <button class="btn btn-primary" onclick="applyFilters()">
-                                            <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M3 6h18"></path>
-                                                <path d="M7 12h10"></path>
-                                                <path d="M10 18h4"></path>
-                                            </svg>
-                                            Apply Filters
-                                        </button>
-                                    </div>
+                            
+                            <div class="metric-card">
+                                <div class="metric-card-header">
+                                    <h3 class="metric-card-title">Healthy Services</h3>
+                                    <svg class="metric-card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                        <polyline points="22,4 12,14.01 9,11.01"></polyline>
+                                    </svg>
+                                </div>
+                                <div id="healthy-services" class="metric-card-value">-</div>
+                                <div class="metric-card-change positive">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                                        <polyline points="17 6 23 6 23 12"></polyline>
+                                    </svg>
+                                    100% uptime
+                                </div>
+                            </div>
+                            
+                            <div class="metric-card">
+                                <div class="metric-card-header">
+                                    <h3 class="metric-card-title">Error Rate</h3>
+                                    <svg class="metric-card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <line x1="15" y1="9" x2="9" y2="15"></line>
+                                        <line x1="9" y1="9" x2="15" y2="15"></line>
+                                    </svg>
+                                </div>
+                                <div id="error-rate" class="metric-card-value">-</div>
+                                <div class="metric-card-change negative">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                                        <polyline points="17 18 23 18 23 12"></polyline>
+                                    </svg>
+                                    +0.2% from last hour
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Logs Table -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h3 class="card-title">Log Entries</h3>
-                                <div class="card-actions">
-                                    <button class="btn btn-outline btn-sm" onclick="exportLogs()">
-                                        <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M3 3v18h18"></path>
-                                            <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
-                                        </svg>
-                                        Export
-                                    </button>
+                        <div class="services-list">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Service Health</h3>
+                                    <div class="card-actions">
+                                        <button class="btn btn-outline btn-sm">
+                                            <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M3 3v18h18"></path>
+                                                <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
+                                            </svg>
+                                            Export
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="card-content">
-                                <div class="data-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Timestamp</th>
-                                            <th>Level</th>
-                                            <th>Service</th>
-                                            <th>Message</th>
-                                            <th>Trace ID</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="logs-table-body">
-                                        <tr>
-                                            <td colspan="6" class="loading">
-                                                <div class="loading-spinner"></div>
-                                                Loading logs...
-                                            </td>
-                                        </tr>
-                                    </tbody>
+                                <div class="card-content">
+                                    <div class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Service Name</th>
+                                                <th>Status</th>
+                                                <th>Uptime</th>
+                                                <th>Response Time</th>
+                                                <th>Error Rate</th>
+                                                <th>Last Seen</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="services-table-body">
+                                            <tr>
+                                                <td colspan="7" class="loading">
+                                                    <div class="loading-spinner"></div>
+                                                    Loading services...
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -277,45 +283,59 @@
 
     <script src="/static/app.js"></script>
     <script>
-        // Logs-specific JavaScript
-        async function loadLogs() {
+        // Services-specific JavaScript
+        async function loadServicesData() {
             try {
-                const response = await fetch('/api/v1/logs');
+                const response = await fetch('/api/v1/services');
                 if (response.ok) {
-                    const logs = await response.json();
-                    displayLogs(logs);
+                    const services = await response.json();
+                    displayServices(services);
+                    updateServiceStats(services);
                 } else {
-                    console.error('Failed to load logs');
+                    console.error('Failed to load services');
                 }
             } catch (error) {
-                console.error('Error loading logs:', error);
+                console.error('Error loading services:', error);
             }
         }
 
-        function displayLogs(logs) {
-            const tbody = document.getElementById('logs-table-body');
+        function displayServices(services) {
+            const tbody = document.getElementById('services-table-body');
             if (!tbody) return;
 
-            if (logs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center">No logs found</td></tr>';
+            if (services.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center">No services found</td></tr>';
                 return;
             }
 
-            tbody.innerHTML = logs.map(log => `
+            tbody.innerHTML = services.map(service => `
                 <tr>
-                    <td>${log.timestamp || 'Unknown'}</td>
                     <td>
-                        <span class="badge badge-${getLogLevelClass(log.level)}">${log.level || 'INFO'}</span>
+                        <div class="service-name">${service.name || 'Unknown'}</div>
+                        <div class="service-version">v${service.version || '1.0.0'}</div>
                     </td>
-                    <td>${log.service_name || 'Unknown'}</td>
-                    <td class="log-message">${log.message || 'No message'}</td>
-                    <td>${log.trace_id || '-'}</td>
+                    <td>
+                        <div class="status-badge ${service.status || 'offline'}">
+                            <div class="status-dot"></div>
+                            <span>${service.status || 'Offline'}</span>
+                        </div>
+                    </td>
+                    <td>${service.uptime || '0%'}</td>
+                    <td>${service.responseTime || '0ms'}</td>
+                    <td>${service.errorRate || '0%'}</td>
+                    <td>${service.lastSeen || 'Never'}</td>
                     <td>
                         <div class="table-actions">
-                            <button class="table-action" onclick="viewLogDetails('${log.id}')" title="View Details">
+                            <button class="table-action" title="View Details">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                     <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                            <button class="table-action" title="Edit Service">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                                 </svg>
                             </button>
                         </div>
@@ -324,47 +344,18 @@
             `).join('');
         }
 
-        function getLogLevelClass(level) {
-            switch (level?.toUpperCase()) {
-                case 'ERROR':
-                    return 'destructive';
-                case 'WARN':
-                    return 'warning';
-                case 'INFO':
-                    return 'info';
-                case 'DEBUG':
-                    return 'secondary';
-                default:
-                    return 'secondary';
-            }
+        function updateServiceStats(services) {
+            const totalServices = services.length;
+            const healthyServices = services.filter(s => s.status === 'online' || s.status === 'healthy').length;
+            const errorRate = services.length > 0 ? 
+                (services.reduce((sum, s) => sum + (parseFloat(s.errorRate) || 0), 0) / services.length).toFixed(2) + '%' : '0%';
+
+            document.getElementById('total-services').textContent = totalServices;
+            document.getElementById('healthy-services').textContent = healthyServices;
+            document.getElementById('error-rate').textContent = errorRate;
         }
 
-        function applyFilters() {
-            const service = document.getElementById('service-filter').value;
-            const level = document.getElementById('level-filter').value;
-            const timeRange = document.getElementById('time-range').value;
-            const limit = document.getElementById('limit-filter').value;
-            
-            console.log('Applying filters:', { service, level, timeRange, limit });
-            // TODO: Implement actual filtering
-            loadLogs();
-        }
-
-        function refreshLogs() {
-            loadLogs();
-        }
-
-        function exportLogs() {
-            // TODO: Implement logs export
-            console.log('Exporting logs...');
-        }
-
-        function viewLogDetails(logId) {
-            // TODO: Implement log details view
-            console.log('Viewing log details:', logId);
-        }
-
-        document.addEventListener('DOMContentLoaded', loadLogs);
+        document.addEventListener('DOMContentLoaded', loadServicesData);
     </script>
 </body>
 </html>

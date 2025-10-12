@@ -7,161 +7,406 @@
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <h1>{{.title}}</h1>
-            <nav class="nav">
-                <a href="/" class="nav-link">Home</a>
-                <a href="/dashboard" class="nav-link">Dashboard</a>
-                <a href="/metrics" class="nav-link">Metrics</a>
-                <a href="/traces" class="nav-link active">Traces</a>
-                <a href="/logs" class="nav-link">Logs</a>
-            </nav>
-        </header>
-
-        <main class="main">
-            <div class="traces-page">
-                <h2>Traces Explorer</h2>
-                
-                <div class="query-section">
-                    <h3>Search Traces</h3>
-                    <div class="query-form">
-                        <input type="text" id="trace-query" placeholder="Enter trace ID, operation name, or service..." class="query-input">
-                        <button onclick="searchTraces()" class="btn">Search</button>
-                        <button onclick="loadAllTraces()" class="btn btn-secondary">Load All</button>
-                    </div>
-                </div>
-
-                <div class="filters">
-                    <h3>Filters</h3>
-                    <div class="filter-row">
-                        <select id="service-filter" class="filter-select">
-                            <option value="">All Services</option>
-                        </select>
-                        <select id="status-filter" class="filter-select">
-                            <option value="">All Status</option>
-                            <option value="OK">OK</option>
-                            <option value="ERROR">ERROR</option>
-                        </select>
-                        <input type="number" id="limit-filter" placeholder="Limit" value="100" class="filter-input">
-                        <button onclick="applyFilters()" class="btn">Apply</button>
-                    </div>
-                </div>
-
-                <div class="traces-results">
-                    <h3>Results</h3>
-                    <div id="traces-container">
-                        <div class="loading">Loading traces...</div>
-                    </div>
+    <div class="app-layout">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <div class="search-container">
+                    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <input type="text" placeholder="Search traces..." class="search-input" />
                 </div>
             </div>
-        </main>
+            
+            <div class="header-right">
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <svg class="theme-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+                
+                <button class="notifications">
+                    <svg class="notification-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <span class="notification-badge">3</span>
+                </button>
+                
+                <button class="user-menu">
+                    <svg class="user-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </button>
+            </div>
+        </header>
 
-        <footer class="footer">
-            <p>&copy; 2024 Open-Telemorph-Prime. Made with ❤️ for developers.</p>
-        </footer>
+        <!-- Body -->
+        <div class="app-body">
+            <!-- Sidebar Overlay -->
+            <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+            
+            <!-- Sidebar -->
+            <aside class="app-sidebar" id="sidebar">
+                <nav class="sidebar-nav">
+                    <div class="sidebar-header">
+                        <div class="brand">
+                            <svg class="brand-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                            </svg>
+                            <div class="brand-text">
+                                <h1>Telemorph</h1>
+                                <p>Observability Platform</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-menu">
+                        <a href="/" class="nav-item">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="/metrics" class="nav-item">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 3v18h18"></path>
+                                <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
+                            </svg>
+                            <span>Metrics</span>
+                        </a>
+                        <a href="/traces" class="nav-item active">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 3h12l4 6-10 13L2 9l4-6z"></path>
+                                <path d="M11 3L8 9l4 13 4-13-3-6"></path>
+                            </svg>
+                            <span>Traces</span>
+                        </a>
+                        <a href="/logs" class="nav-item">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14,2 14,8 20,8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10,9 9,9 8,9"></polyline>
+                            </svg>
+                            <span>Logs</span>
+                        </a>
+                        <a href="/services" class="nav-item">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                            <span>Services</span>
+                        </a>
+                        <a href="/alerts" class="nav-item">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                            </svg>
+                            <span>Alerts</span>
+                        </a>
+                        <a href="/query" class="nav-item">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                            <span>Query Builder</span>
+                        </a>
+                        <a href="/admin" class="nav-item">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                            <span>Admin</span>
+                        </a>
+                    </div>
+                    
+                    <div class="sidebar-footer">
+                        <div class="version-info">
+                            <div>Phase 4 Frontend</div>
+                            <div>v0.1.0</div>
+                        </div>
+                    </div>
+                </nav>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="app-main">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Traces Explorer</h1>
+                        <p class="page-description">Explore and analyze distributed traces</p>
+                    </div>
+                    <div class="page-actions">
+                        <button class="btn btn-outline btn-sm">
+                            <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12,6 12,12 16,14"></polyline>
+                            </svg>
+                            Last 1h
+                        </button>
+                        <button class="btn btn-primary btn-sm" onclick="refreshTraces()">
+                            <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M23 4v6h-6"></path>
+                                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                            </svg>
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <div class="page-content">
+                    <div class="traces-explorer">
+                        <!-- Filters -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Search & Filters</h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="filters-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">Service</label>
+                                        <select class="form-select" id="service-filter">
+                                            <option value="">All Services</option>
+                                            <option value="api-gateway">API Gateway</option>
+                                            <option value="payment-service">Payment Service</option>
+                                            <option value="user-service">User Service</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Operation</label>
+                                        <input type="text" class="form-input" id="operation-filter" placeholder="e.g., /api/users" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Status</label>
+                                        <select class="form-select" id="status-filter">
+                                            <option value="">All Statuses</option>
+                                            <option value="ok">OK</option>
+                                            <option value="error">Error</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Min Duration</label>
+                                        <input type="text" class="form-input" id="duration-filter" placeholder="e.g., 100ms" />
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-primary" onclick="applyFilters()">
+                                            <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M3 6h18"></path>
+                                                <path d="M7 12h10"></path>
+                                                <path d="M10 18h4"></path>
+                                            </svg>
+                                            Apply Filters
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Traces List -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Traces</h3>
+                                <div class="card-actions">
+                                    <button class="btn btn-outline btn-sm" onclick="exportTraces()">
+                                        <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M3 3v18h18"></path>
+                                            <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
+                                        </svg>
+                                        Export
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Trace ID</th>
+                                            <th>Service</th>
+                                            <th>Operation</th>
+                                            <th>Duration</th>
+                                            <th>Status</th>
+                                            <th>Start Time</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="traces-table-body">
+                                        <tr>
+                                            <td colspan="7" class="loading">
+                                                <div class="loading-spinner"></div>
+                                                Loading traces...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Trace Details (when selected) -->
+                        <div id="trace-details" class="card" style="display: none;">
+                            <div class="card-header">
+                                <h3 class="card-title">Trace Details</h3>
+                                <div class="card-actions">
+                                    <button class="btn btn-outline btn-sm" onclick="closeTraceDetails()">
+                                        <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
+                                        Close
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div id="trace-details-content">
+                                    <!-- Trace details will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
     </div>
 
     <script src="/static/app.js"></script>
     <script>
         // Traces-specific JavaScript
-        let currentFilters = {
-            service: '',
-            status: '',
-            limit: 100,
-            offset: 0
-        };
-
-        async function loadAllTraces() {
+        async function loadTraces() {
             try {
-                const traces = await window.telemorphApp.getTraces(currentFilters.limit, currentFilters.offset);
-                displayTraces(traces.data || []);
+                const response = await fetch('/api/v1/traces');
+                if (response.ok) {
+                    const traces = await response.json();
+                    displayTraces(traces);
+                } else {
+                    console.error('Failed to load traces');
+                }
             } catch (error) {
-                console.error('Failed to load traces:', error);
-                document.getElementById('traces-container').innerHTML = '<div class="error">Failed to load traces</div>';
-            }
-        }
-
-        async function searchTraces() {
-            const query = document.getElementById('trace-query').value;
-            if (!query.trim()) {
-                loadAllTraces();
-                return;
-            }
-
-            try {
-                const result = await window.telemorphApp.query('traces', query, currentFilters.limit, currentFilters.offset);
-                displayTraces(result.data || []);
-            } catch (error) {
-                console.error('Failed to search traces:', error);
-                document.getElementById('traces-container').innerHTML = '<div class="error">Search failed</div>';
+                console.error('Error loading traces:', error);
             }
         }
 
         function displayTraces(traces) {
-            const container = document.getElementById('traces-container');
-            
+            const tbody = document.getElementById('traces-table-body');
+            if (!tbody) return;
+
             if (traces.length === 0) {
-                container.innerHTML = '<div class="no-data">No traces found</div>';
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center">No traces found</td></tr>';
                 return;
             }
 
-            const table = `
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Trace ID</th>
-                            <th>Operation</th>
-                            <th>Service</th>
-                            <th>Duration</th>
-                            <th>Status</th>
-                            <th>Start Time</th>
-                            <th>Attributes</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${traces.map(trace => `
-                            <tr>
-                                <td><code>${trace.trace_id}</code></td>
-                                <td><strong>${trace.operation_name}</strong></td>
-                                <td>${trace.service_name || '-'}</td>
-                                <td>${window.telemorphApp.formatDuration(trace.duration_nanos)}</td>
-                                <td><span class="status ${trace.status_code.toLowerCase()}">${trace.status_code}</span></td>
-                                <td>${window.telemorphApp.formatTimestamp(trace.start_time)}</td>
-                                <td><code>${trace.attributes || '{}'}</code></td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `;
-            
-            container.innerHTML = table;
+            tbody.innerHTML = traces.map(trace => `
+                <tr onclick="viewTraceDetails('${trace.trace_id}')" style="cursor: pointer;">
+                    <td class="trace-id">${trace.trace_id || 'Unknown'}</td>
+                    <td>${trace.service_name || 'Unknown'}</td>
+                    <td>${trace.operation_name || 'Unknown'}</td>
+                    <td>${formatDuration(trace.duration_nanos)}</td>
+                    <td>
+                        <span class="badge badge-${getStatusClass(trace.status_code)}">${trace.status_code || 'OK'}</span>
+                    </td>
+                    <td>${formatTimestamp(trace.start_time)}</td>
+                    <td>
+                        <div class="table-actions">
+                            <button class="table-action" onclick="event.stopPropagation(); viewTraceDetails('${trace.trace_id}')" title="View Details">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
         }
 
-        async function loadServices() {
-            try {
-                const services = await window.telemorphApp.fetchServices();
-                const select = document.getElementById('service-filter');
-                select.innerHTML = '<option value="">All Services</option>' +
-                    services.map(service => `<option value="${service}">${service}</option>`).join('');
-            } catch (error) {
-                console.error('Failed to load services:', error);
+        function formatDuration(nanos) {
+            if (!nanos) return '0ms';
+            const ms = nanos / 1000000;
+            if (ms < 1) return `${(nanos / 1000).toFixed(0)}μs`;
+            if (ms < 1000) return `${ms.toFixed(2)}ms`;
+            return `${(ms / 1000).toFixed(2)}s`;
+        }
+
+        function formatTimestamp(timestamp) {
+            if (!timestamp) return 'Unknown';
+            return new Date(timestamp).toLocaleString();
+        }
+
+        function getStatusClass(status) {
+            switch (status?.toUpperCase()) {
+                case 'ERROR':
+                    return 'destructive';
+                case 'OK':
+                    return 'success';
+                default:
+                    return 'secondary';
             }
         }
 
         function applyFilters() {
-            currentFilters.service = document.getElementById('service-filter').value;
-            currentFilters.status = document.getElementById('status-filter').value;
-            currentFilters.limit = parseInt(document.getElementById('limit-filter').value) || 100;
-            currentFilters.offset = 0;
-            loadAllTraces();
+            const service = document.getElementById('service-filter').value;
+            const operation = document.getElementById('operation-filter').value;
+            const status = document.getElementById('status-filter').value;
+            const duration = document.getElementById('duration-filter').value;
+            
+            console.log('Applying filters:', { service, operation, status, duration });
+            // TODO: Implement actual filtering
+            loadTraces();
         }
 
-        // Load data when page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            loadServices();
-            loadAllTraces();
-        });
+        function refreshTraces() {
+            loadTraces();
+        }
+
+        function exportTraces() {
+            // TODO: Implement traces export
+            console.log('Exporting traces...');
+        }
+
+        function viewTraceDetails(traceId) {
+            // TODO: Implement trace details view
+            console.log('Viewing trace details:', traceId);
+            
+            // Show trace details panel
+            const detailsPanel = document.getElementById('trace-details');
+            const detailsContent = document.getElementById('trace-details-content');
+            
+            detailsContent.innerHTML = `
+                <div class="trace-details">
+                    <h4>Trace ID: ${traceId}</h4>
+                    <p>Trace details will be loaded here...</p>
+                </div>
+            `;
+            
+            detailsPanel.style.display = 'block';
+        }
+
+        function closeTraceDetails() {
+            document.getElementById('trace-details').style.display = 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', loadTraces);
     </script>
 </body>
 </html>

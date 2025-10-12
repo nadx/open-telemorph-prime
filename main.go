@@ -123,6 +123,14 @@ func registerRoutes(router *gin.Engine, ingestionService *ingestion.Service, web
 		api.POST("/query", webService.Query)
 	}
 
+	// Admin API routes
+	admin := router.Group("/api/v1/admin")
+	{
+		admin.GET("/config", webService.GetConfig)
+		admin.POST("/config", webService.SaveConfig)
+		admin.GET("/status", webService.GetSystemStatus)
+	}
+
 	// OTLP endpoints
 	otlp := router.Group("/v1")
 	{
@@ -138,6 +146,10 @@ func registerRoutes(router *gin.Engine, ingestionService *ingestion.Service, web
 	router.GET("/metrics", webService.MetricsPage)
 	router.GET("/traces", webService.TracesPage)
 	router.GET("/logs", webService.LogsPage)
+	router.GET("/services", webService.ServicesPage)
+	router.GET("/alerts", webService.AlertsPage)
+	router.GET("/query", webService.QueryPage)
+	router.GET("/admin", webService.AdminPage)
 }
 
 func healthCheck(c *gin.Context) {

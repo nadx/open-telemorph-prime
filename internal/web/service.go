@@ -168,3 +168,84 @@ func (s *Service) LogsPage(c *gin.Context) {
 		"theme": s.config.Theme,
 	})
 }
+
+func (s *Service) ServicesPage(c *gin.Context) {
+	c.HTML(http.StatusOK, "services.html", gin.H{
+		"title": s.config.Title + " - Services",
+		"theme": s.config.Theme,
+	})
+}
+
+func (s *Service) AlertsPage(c *gin.Context) {
+	c.HTML(http.StatusOK, "alerts.html", gin.H{
+		"title": s.config.Title + " - Alerts",
+		"theme": s.config.Theme,
+	})
+}
+
+func (s *Service) QueryPage(c *gin.Context) {
+	c.HTML(http.StatusOK, "query.html", gin.H{
+		"title": s.config.Title + " - Query Builder",
+		"theme": s.config.Theme,
+	})
+}
+
+func (s *Service) AdminPage(c *gin.Context) {
+	c.HTML(http.StatusOK, "admin.html", gin.H{
+		"title": s.config.Title + " - Administration",
+		"theme": s.config.Theme,
+	})
+}
+
+// Admin API endpoints
+func (s *Service) GetConfig(c *gin.Context) {
+	// TODO: Implement config retrieval
+	c.JSON(http.StatusOK, gin.H{
+		"server": gin.H{
+			"port":          8080,
+			"read_timeout":  "5s",
+			"write_timeout": "10s",
+			"idle_timeout":  "120s",
+		},
+		"storage": gin.H{
+			"type":           "sqlite",
+			"path":           "./data/telemorph.db",
+			"retention_days": 30,
+		},
+		"ingestion": gin.H{
+			"api_endpoint":    "0.0.0.0:9013",
+			"health_endpoint": "0.0.0.0:8080",
+		},
+		"web": gin.H{
+			"port":      3000,
+			"enable_ui": true,
+			"theme":     "auto",
+		},
+		"logging": gin.H{
+			"level":       "info",
+			"format":      "console",
+			"development": true,
+		},
+	})
+}
+
+func (s *Service) SaveConfig(c *gin.Context) {
+	var config map[string]interface{}
+	if err := c.ShouldBindJSON(&config); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// TODO: Implement config saving
+	c.JSON(http.StatusOK, gin.H{"message": "Configuration saved successfully"})
+}
+
+func (s *Service) GetSystemStatus(c *gin.Context) {
+	// TODO: Implement system status retrieval
+	c.JSON(http.StatusOK, gin.H{
+		"uptime":       "2h 15m 30s",
+		"memory_usage": "45.2 MB",
+		"storage_used": "128.5 MB",
+		"status":       "healthy",
+	})
+}

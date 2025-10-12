@@ -7,66 +7,343 @@
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <h1>{{.title}}</h1>
-            <nav class="nav">
-                <a href="/" class="nav-link">Home</a>
-                <a href="/dashboard" class="nav-link active">Dashboard</a>
-                <a href="/metrics" class="nav-link">Metrics</a>
-                <a href="/traces" class="nav-link">Traces</a>
-                <a href="/logs" class="nav-link">Logs</a>
-            </nav>
+    <div class="app-layout">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <div class="search-container">
+                    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <input type="text" placeholder="Search metrics, traces, logs..." class="search-input" />
+                </div>
+            </div>
+            
+            <div class="header-right">
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <svg class="theme-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+                
+                <button class="notifications">
+                    <svg class="notification-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <span class="notification-badge">3</span>
+                </button>
+                
+                <button class="user-menu">
+                    <svg class="user-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </button>
+            </div>
         </header>
 
-        <main class="main">
-            <div class="dashboard">
-                <h2>System Overview</h2>
+        <!-- Body -->
+        <div class="app-body">
+            <!-- Sidebar -->
+            <aside class="app-sidebar">
+                <nav class="sidebar-nav">
+                    <div class="sidebar-header">
+                        <div class="brand">
+                            <svg class="brand-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                            </svg>
+                            <div class="brand-text">
+                                <h1>Telemorph</h1>
+                                <p>Observability Platform</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-menu">
+                        <a href="/" class="nav-item">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="/metrics" class="nav-item">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 3v18h18"></path>
+                                <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
+                            </svg>
+                            <span>Metrics</span>
+                        </a>
+                        <a href="/traces" class="nav-item">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 3h12l4 6-10 13L2 9l4-6z"></path>
+                                <path d="M11 3L8 9l4 13 4-13-3-6"></path>
+                            </svg>
+                            <span>Traces</span>
+                        </a>
+                        <a href="/logs" class="nav-item">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14,2 14,8 20,8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10,9 9,9 8,9"></polyline>
+                            </svg>
+                            <span>Logs</span>
+                        </a>
+                        <a href="/services" class="nav-item">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                            <span>Services</span>
+                        </a>
+                        <a href="/alerts" class="nav-item">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                            </svg>
+                            <span>Alerts</span>
+                        </a>
+                        <a href="/query" class="nav-item">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                            <span>Query Builder</span>
+                        </a>
+                        <a href="/admin" class="nav-item">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                            <span>Admin</span>
+                        </a>
+                    </div>
+                    
+                    <div class="sidebar-footer">
+                        <div class="version-info">
+                            <div>Phase 4 Frontend</div>
+                            <div>v0.1.0</div>
+                        </div>
+                    </div>
+                </nav>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="app-main">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Dashboard</h1>
+                        <p class="page-description">Overview of your observability data</p>
+                    </div>
+                    <div class="page-actions">
+                        <button class="btn btn-outline btn-sm">
+                            <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12,6 12,12 16,14"></polyline>
+                            </svg>
+                            Last 1h
+                        </button>
+                        <button class="btn btn-primary btn-sm">
+                            <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M23 4v6h-6"></path>
+                                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                            </svg>
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <div class="page-content">
+                    <div class="dashboard">
+                        <h2>System Overview</h2>
                 
                 <div class="stats-grid">
-                    <div class="stat-card">
-                        <h3>Services</h3>
-                        <div id="service-count" class="stat-value">-</div>
+                    <div class="metric-card">
+                        <div class="metric-card-header">
+                            <h3 class="metric-card-title">Services</h3>
+                            <svg class="metric-card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                        </div>
+                        <div id="service-count" class="metric-card-value">-</div>
+                        <div class="metric-card-change positive">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                                <polyline points="17 6 23 6 23 12"></polyline>
+                            </svg>
+                            +2 this week
+                        </div>
                     </div>
                     
-                    <div class="stat-card">
-                        <h3>Traces</h3>
-                        <div id="trace-count" class="stat-value">-</div>
+                    <div class="metric-card">
+                        <div class="metric-card-header">
+                            <h3 class="metric-card-title">Traces</h3>
+                            <svg class="metric-card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 3h12l4 6-10 13L2 9l4-6z"></path>
+                                <path d="M11 3L8 9l4 13 4-13-3-6"></path>
+                            </svg>
+                        </div>
+                        <div id="trace-count" class="metric-card-value">-</div>
+                        <div class="metric-card-change positive">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                                <polyline points="17 6 23 6 23 12"></polyline>
+                            </svg>
+                            +12% from last hour
+                        </div>
                     </div>
                     
-                    <div class="stat-card">
-                        <h3>Metrics</h3>
-                        <div id="metric-count" class="stat-value">-</div>
+                    <div class="metric-card">
+                        <div class="metric-card-header">
+                            <h3 class="metric-card-title">Metrics</h3>
+                            <svg class="metric-card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 3v18h18"></path>
+                                <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
+                            </svg>
+                        </div>
+                        <div id="metric-count" class="metric-card-value">-</div>
+                        <div class="metric-card-change neutral">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            No change
+                        </div>
                     </div>
                     
-                    <div class="stat-card">
-                        <h3>Logs</h3>
-                        <div id="log-count" class="stat-value">-</div>
+                    <div class="metric-card">
+                        <div class="metric-card-header">
+                            <h3 class="metric-card-title">Logs</h3>
+                            <svg class="metric-card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14,2 14,8 20,8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10,9 9,9 8,9"></polyline>
+                            </svg>
+                        </div>
+                        <div id="log-count" class="metric-card-value">-</div>
+                        <div class="metric-card-change negative">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                                <polyline points="17 18 23 18 23 12"></polyline>
+                            </svg>
+                            -5% from last hour
+                        </div>
                     </div>
                 </div>
 
                 <div class="recent-data">
-                    <h3>Recent Activity</h3>
-                    <div id="recent-traces" class="data-section">
-                        <h4>Latest Traces</h4>
-                        <div id="traces-list" class="data-list">
-                            <div class="loading">Loading...</div>
+                    <div class="data-section">
+                        <h3>Recent Alerts</h3>
+                        <div class="alerts-list">
+                            <div class="alert-card critical">
+                                <svg class="alert-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                </svg>
+                                <div class="alert-content">
+                                    <div class="alert-title">High Error Rate Detected</div>
+                                    <div class="alert-message">Payment service error rate exceeded 5% threshold</div>
+                                    <div class="alert-time">2 minutes ago</div>
+                                </div>
+                            </div>
+                            
+                            <div class="alert-card warning">
+                                <svg class="alert-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                </svg>
+                                <div class="alert-content">
+                                    <div class="alert-title">Memory Usage High</div>
+                                    <div class="alert-message">Web server memory usage above 80%</div>
+                                    <div class="alert-time">5 minutes ago</div>
+                                </div>
+                            </div>
+                            
+                            <div class="alert-card info">
+                                <svg class="alert-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                </svg>
+                                <div class="alert-content">
+                                    <div class="alert-title">New Deployment</div>
+                                    <div class="alert-message">API Gateway v2.1.0 deployed successfully</div>
+                                    <div class="alert-time">12 minutes ago</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
-                    <div id="recent-logs" class="data-section">
-                        <h4>Latest Logs</h4>
-                        <div id="logs-list" class="data-list">
-                            <div class="loading">Loading...</div>
+                    <div class="data-section">
+                        <h3>Service Health</h3>
+                        <div class="service-health">
+                            <div class="service-item">
+                                <div class="service-info">
+                                    <div class="service-name">api-gateway</div>
+                                    <div class="service-uptime">Uptime: 99.9%</div>
+                                </div>
+                                <div class="status-badge online">
+                                    <div class="status-dot"></div>
+                                    <span>Healthy</span>
+                                </div>
+                            </div>
+                            
+                            <div class="service-item">
+                                <div class="service-info">
+                                    <div class="service-name">payment-service</div>
+                                    <div class="service-uptime">Uptime: 98.2%</div>
+                                </div>
+                                <div class="status-badge warning">
+                                    <div class="status-dot"></div>
+                                    <span>Degraded</span>
+                                </div>
+                            </div>
+                            
+                            <div class="service-item">
+                                <div class="service-info">
+                                    <div class="service-name">user-service</div>
+                                    <div class="service-uptime">Uptime: 99.8%</div>
+                                </div>
+                                <div class="status-badge online">
+                                    <div class="status-dot"></div>
+                                    <span>Healthy</span>
+                                </div>
+                            </div>
+                            
+                            <div class="service-item">
+                                <div class="service-info">
+                                    <div class="service-name">notification-service</div>
+                                    <div class="service-uptime">Uptime: 99.5%</div>
+                                </div>
+                                <div class="status-badge online">
+                                    <div class="status-dot"></div>
+                                    <span>Healthy</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </main>
-
-        <footer class="footer">
-            <p>&copy; 2024 Open-Telemorph-Prime. Made with ❤️ for developers.</p>
-        </footer>
+                </div>
+            </main>
+        </div>
     </div>
 
     <script src="/static/app.js"></script>

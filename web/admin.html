@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.title}}</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <div class="search-container">
+                    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <input type="text" placeholder="Search configuration..." class="search-input" />
+                </div>
+            </div>
+            
+            <div class="header-right">
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <svg class="theme-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+                
+                <button class="notifications">
+                    <svg class="notification-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <span class="notification-badge">3</span>
+                </button>
+                
+                <button class="user-menu">
+                    <svg class="user-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Body -->
+        <div class="app-body">
+            <!-- Sidebar Overlay -->
+            <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+            
+            <!-- Sidebar -->
+            <aside class="app-sidebar" id="sidebar">
+                <nav class="sidebar-nav">
+                    <div class="sidebar-header">
+                        <div class="brand">
+                            <svg class="brand-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                            </svg>
+                            <div class="brand-text">
+                                <h1>Telemorph</h1>
+                                <p>Observability Platform</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-menu">
+                        <a href="/" class="nav-item">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="/metrics" class="nav-item">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 3v18h18"></path>
+                                <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
+                            </svg>
+                            <span>Metrics</span>
+                        </a>
+                        <a href="/traces" class="nav-item">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 3h12l4 6-10 13L2 9l4-6z"></path>
+                                <path d="M11 3L8 9l4 13 4-13-3-6"></path>
+                            </svg>
+                            <span>Traces</span>
+                        </a>
+                        <a href="/logs" class="nav-item">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14,2 14,8 20,8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10,9 9,9 8,9"></polyline>
+                            </svg>
+                            <span>Logs</span>
+                        </a>
+                        <a href="/services" class="nav-item">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                            <span>Services</span>
+                        </a>
+                        <a href="/alerts" class="nav-item">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                            </svg>
+                            <span>Alerts</span>
+                        </a>
+                        <a href="/query" class="nav-item">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                            <span>Query Builder</span>
+                        </a>
+                        <a href="/admin" class="nav-item active">
+                            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                            <span>Admin</span>
+                        </a>
+                    </div>
+                    
+                    <div class="sidebar-footer">
+                        <div class="version-info">
+                            <div>Phase 4 Frontend</div>
+                            <div>v0.1.0</div>
+                        </div>
+                    </div>
+                </nav>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="app-main">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Administration</h1>
+                        <p class="page-description">Manage system configuration and settings</p>
+                    </div>
+                    <div class="page-actions">
+                        <button class="btn btn-outline btn-sm" onclick="exportConfig()">
+                            <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7,10 12,15 17,10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            Export Config
+                        </button>
+                        <button class="btn btn-primary btn-sm" onclick="saveAllConfig()">
+                            <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                <polyline points="17,21 17,13 7,13 7,21"></polyline>
+                                <polyline points="7,3 7,8 15,8"></polyline>
+                            </svg>
+                            Save All
+                        </button>
+                    </div>
+                </div>
+
+                <div class="page-content">
+                    <div class="admin-sections">
+                        <!-- System Overview -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">System Overview</h3>
+                                <div class="card-actions">
+                                    <button class="btn btn-outline btn-sm" onclick="refreshSystemStatus()">
+                                        <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M23 4v6h-6"></path>
+                                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                        </svg>
+                                        Refresh
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="system-stats">
+                                    <div class="metric-card">
+                                        <div class="metric-card-header">
+                                            <h3 class="metric-card-title">Uptime</h3>
+                                            <svg class="metric-card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <circle cx="12" cy="12" r="10"></circle>
+                                                <polyline points="12,6 12,12 16,14"></polyline>
+                                            </svg>
+                                        </div>
+                                        <div id="system-uptime" class="metric-card-value">-</div>
+                                    </div>
+                                    
+                                    <div class="metric-card">
+                                        <div class="metric-card-header">
+                                            <h3 class="metric-card-title">Memory Usage</h3>
+                                            <svg class="metric-card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                                <line x1="8" y1="21" x2="16" y2="21"></line>
+                                                <line x1="12" y1="17" x2="12" y2="21"></line>
+                                            </svg>
+                                        </div>
+                                        <div id="memory-usage" class="metric-card-value">-</div>
+                                    </div>
+                                    
+                                    <div class="metric-card">
+                                        <div class="metric-card-header">
+                                            <h3 class="metric-card-title">Storage Used</h3>
+                                            <svg class="metric-card-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                                <polyline points="3.27,6.96 12,12.01 20.73,6.96"></polyline>
+                                                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                                            </svg>
+                                        </div>
+                                        <div id="storage-used" class="metric-card-value">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Configuration Tabs -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Configuration</h3>
+                                <div class="config-tabs">
+                                    <button class="tab-btn active" onclick="switchTab('server')">Server</button>
+                                    <button class="tab-btn" onclick="switchTab('storage')">Storage</button>
+                                    <button class="tab-btn" onclick="switchTab('ingestion')">Ingestion</button>
+                                    <button class="tab-btn" onclick="switchTab('web')">Web</button>
+                                    <button class="tab-btn" onclick="switchTab('logging')">Logging</button>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <!-- Server Configuration -->
+                                <div id="server-config" class="config-section active">
+                                    <h4>Server Configuration</h4>
+                                    <div class="config-form">
+                                        <div class="form-group">
+                                            <label class="form-label">Port</label>
+                                            <input type="number" class="form-input" id="server-port" value="8080" />
+                                            <div class="form-help">Port for the web server</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Read Timeout</label>
+                                            <input type="text" class="form-input" id="server-read-timeout" value="5s" />
+                                            <div class="form-help">HTTP read timeout</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Write Timeout</label>
+                                            <input type="text" class="form-input" id="server-write-timeout" value="10s" />
+                                            <div class="form-help">HTTP write timeout</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Idle Timeout</label>
+                                            <input type="text" class="form-input" id="server-idle-timeout" value="120s" />
+                                            <div class="form-help">HTTP idle timeout</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Storage Configuration -->
+                                <div id="storage-config" class="config-section">
+                                    <h4>Storage Configuration</h4>
+                                    <div class="config-form">
+                                        <div class="form-group">
+                                            <label class="form-label">Storage Type</label>
+                                            <select class="form-select" id="storage-type" onchange="updateStorageConfig()">
+                                                <option value="sqlite">SQLite</option>
+                                                <option value="postgres">PostgreSQL</option>
+                                                <option value="files">Files</option>
+                                            </select>
+                                            <div class="form-help">Storage backend type</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Data Path</label>
+                                            <input type="text" class="form-input" id="storage-path" value="./data/telemorph.db" />
+                                            <div class="form-help">Path for SQLite DB or data directory</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Retention Days</label>
+                                            <input type="number" class="form-input" id="storage-retention" value="30" />
+                                            <div class="form-help">Data retention period in days</div>
+                                        </div>
+                                        <div id="postgres-config" class="postgres-config" style="display: none;">
+                                            <div class="form-group">
+                                                <label class="form-label">Host</label>
+                                                <input type="text" class="form-input" id="postgres-host" value="localhost" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Port</label>
+                                                <input type="number" class="form-input" id="postgres-port" value="5432" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Database</label>
+                                                <input type="text" class="form-input" id="postgres-db" value="telemorph" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Username</label>
+                                                <input type="text" class="form-input" id="postgres-user" value="telemorph" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label">Password</label>
+                                                <input type="password" class="form-input" id="postgres-password" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Ingestion Configuration -->
+                                <div id="ingestion-config" class="config-section">
+                                    <h4>Ingestion Configuration</h4>
+                                    <div class="config-form">
+                                        <div class="form-group">
+                                            <label class="form-label">API Endpoint</label>
+                                            <input type="text" class="form-input" id="ingestion-api-endpoint" value="0.0.0.0:9013" />
+                                            <div class="form-help">OTLP HTTP/gRPC endpoint</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Health Endpoint</label>
+                                            <input type="text" class="form-input" id="ingestion-health-endpoint" value="0.0.0.0:8080" />
+                                            <div class="form-help">Health check endpoint</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Batch Size</label>
+                                            <input type="number" class="form-input" id="ingestion-batch-size" value="1000" />
+                                            <div class="form-help">Maximum batch size for processing</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Batch Timeout</label>
+                                            <input type="text" class="form-input" id="ingestion-batch-timeout" value="1s" />
+                                            <div class="form-help">Maximum time to wait for batch</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Web Configuration -->
+                                <div id="web-config" class="config-section">
+                                    <h4>Web Configuration</h4>
+                                    <div class="config-form">
+                                        <div class="form-group">
+                                            <label class="form-label">Port</label>
+                                            <input type="number" class="form-input" id="web-port" value="3000" />
+                                            <div class="form-help">Port for the web interface</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Enable UI</label>
+                                            <input type="checkbox" class="form-checkbox" id="web-enable-ui" checked />
+                                            <div class="form-help">Enable the web user interface</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Theme</label>
+                                            <select class="form-select" id="web-theme">
+                                                <option value="auto">Auto</option>
+                                                <option value="light">Light</option>
+                                                <option value="dark">Dark</option>
+                                            </select>
+                                            <div class="form-help">Default theme for the web interface</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Logging Configuration -->
+                                <div id="logging-config" class="config-section">
+                                    <h4>Logging Configuration</h4>
+                                    <div class="config-form">
+                                        <div class="form-group">
+                                            <label class="form-label">Log Level</label>
+                                            <select class="form-select" id="logging-level">
+                                                <option value="debug">Debug</option>
+                                                <option value="info" selected>Info</option>
+                                                <option value="warn">Warn</option>
+                                                <option value="error">Error</option>
+                                            </select>
+                                            <div class="form-help">Minimum log level to output</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Log Format</label>
+                                            <select class="form-select" id="logging-format">
+                                                <option value="console" selected>Console</option>
+                                                <option value="json">JSON</option>
+                                            </select>
+                                            <div class="form-help">Log output format</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Development Mode</label>
+                                            <input type="checkbox" class="form-checkbox" id="logging-development" checked />
+                                            <div class="form-help">Enable development logging features</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- System Actions -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">System Actions</h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="action-buttons">
+                                    <button class="btn btn-outline" onclick="restartService()">
+                                        <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M23 4v6h-6"></path>
+                                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                        </svg>
+                                        Restart Service
+                                    </button>
+                                    <button class="btn btn-outline" onclick="clearCache()">
+                                        <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M3 6h18"></path>
+                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                                        </svg>
+                                        Clear Cache
+                                    </button>
+                                    <button class="btn btn-outline" onclick="backupData()">
+                                        <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7,10 12,15 17,10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        Backup Data
+                                    </button>
+                                    <button class="btn btn-destructive" onclick="resetConfig()">
+                                        <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M3 6h18"></path>
+                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                                        </svg>
+                                        Reset to Defaults
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+    <script>
+        // Admin-specific JavaScript
+        let currentConfig = {};
+
+        function switchTab(tabName) {
+            // Hide all config sections
+            document.querySelectorAll('.config-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(tabName + '-config').classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        function updateStorageConfig() {
+            const storageType = document.getElementById('storage-type').value;
+            const postgresConfig = document.getElementById('postgres-config');
+            
+            if (storageType === 'postgres') {
+                postgresConfig.style.display = 'block';
+            } else {
+                postgresConfig.style.display = 'none';
+            }
+        }
+
+        async function loadConfig() {
+            try {
+                const response = await fetch('/api/v1/admin/config');
+                if (response.ok) {
+                    currentConfig = await response.json();
+                    populateConfigForm();
+                } else {
+                    console.error('Failed to load configuration');
+                }
+            } catch (error) {
+                console.error('Error loading configuration:', error);
+            }
+        }
+
+        function populateConfigForm() {
+            // Populate server config
+            if (currentConfig.server) {
+                document.getElementById('server-port').value = currentConfig.server.port || 8080;
+                document.getElementById('server-read-timeout').value = currentConfig.server.read_timeout || '5s';
+                document.getElementById('server-write-timeout').value = currentConfig.server.write_timeout || '10s';
+                document.getElementById('server-idle-timeout').value = currentConfig.server.idle_timeout || '120s';
+            }
+            
+            // Populate storage config
+            if (currentConfig.storage) {
+                document.getElementById('storage-type').value = currentConfig.storage.type || 'sqlite';
+                document.getElementById('storage-path').value = currentConfig.storage.path || './data/telemorph.db';
+                document.getElementById('storage-retention').value = currentConfig.storage.retention_days || 30;
+                updateStorageConfig();
+            }
+            
+            // Populate ingestion config
+            if (currentConfig.ingestion) {
+                document.getElementById('ingestion-api-endpoint').value = currentConfig.ingestion.api_endpoint || '0.0.0.0:9013';
+                document.getElementById('ingestion-health-endpoint').value = currentConfig.ingestion.health_endpoint || '0.0.0.0:8080';
+            }
+            
+            // Populate web config
+            if (currentConfig.web) {
+                document.getElementById('web-port').value = currentConfig.web.port || 3000;
+                document.getElementById('web-enable-ui').checked = currentConfig.web.enable_ui !== false;
+                document.getElementById('web-theme').value = currentConfig.web.theme || 'auto';
+            }
+            
+            // Populate logging config
+            if (currentConfig.logging) {
+                document.getElementById('logging-level').value = currentConfig.logging.level || 'info';
+                document.getElementById('logging-format').value = currentConfig.logging.format || 'console';
+                document.getElementById('logging-development').checked = currentConfig.logging.development !== false;
+            }
+        }
+
+        async function saveAllConfig() {
+            const config = {
+                server: {
+                    port: parseInt(document.getElementById('server-port').value),
+                    read_timeout: document.getElementById('server-read-timeout').value,
+                    write_timeout: document.getElementById('server-write-timeout').value,
+                    idle_timeout: document.getElementById('server-idle-timeout').value
+                },
+                storage: {
+                    type: document.getElementById('storage-type').value,
+                    path: document.getElementById('storage-path').value,
+                    retention_days: parseInt(document.getElementById('storage-retention').value)
+                },
+                ingestion: {
+                    api_endpoint: document.getElementById('ingestion-api-endpoint').value,
+                    health_endpoint: document.getElementById('ingestion-health-endpoint').value,
+                    batch_size: parseInt(document.getElementById('ingestion-batch-size').value),
+                    batch_timeout: document.getElementById('ingestion-batch-timeout').value
+                },
+                web: {
+                    port: parseInt(document.getElementById('web-port').value),
+                    enable_ui: document.getElementById('web-enable-ui').checked,
+                    theme: document.getElementById('web-theme').value
+                },
+                logging: {
+                    level: document.getElementById('logging-level').value,
+                    format: document.getElementById('logging-format').value,
+                    development: document.getElementById('logging-development').checked
+                }
+            };
+
+            // Add PostgreSQL config if selected
+            if (config.storage.type === 'postgres') {
+                config.storage.postgres = {
+                    host: document.getElementById('postgres-host').value,
+                    port: parseInt(document.getElementById('postgres-port').value),
+                    database: document.getElementById('postgres-db').value,
+                    username: document.getElementById('postgres-user').value,
+                    password: document.getElementById('postgres-password').value
+                };
+            }
+
+            try {
+                const response = await fetch('/api/v1/admin/config', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(config)
+                });
+                
+                if (response.ok) {
+                    alert('Configuration saved successfully!');
+                    currentConfig = config;
+                } else {
+                    throw new Error(`Failed to save configuration: ${response.statusText}`);
+                }
+            } catch (error) {
+                console.error('Error saving configuration:', error);
+                alert('Failed to save configuration: ' + error.message);
+            }
+        }
+
+        async function refreshSystemStatus() {
+            try {
+                const response = await fetch('/api/v1/admin/status');
+                if (response.ok) {
+                    const status = await response.json();
+                    updateSystemStatus(status);
+                }
+            } catch (error) {
+                console.error('Error refreshing system status:', error);
+            }
+        }
+
+        function updateSystemStatus(status) {
+            document.getElementById('system-uptime').textContent = status.uptime || 'Unknown';
+            document.getElementById('memory-usage').textContent = status.memory_usage || 'Unknown';
+            document.getElementById('storage-used').textContent = status.storage_used || 'Unknown';
+        }
+
+        function exportConfig() {
+            const config = {
+                ...currentConfig,
+                exported_at: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'telemorph-config.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function restartService() {
+            if (confirm('Are you sure you want to restart the service? This will cause a brief downtime.')) {
+                // TODO: Implement service restart
+                console.log('Restarting service...');
+            }
+        }
+
+        function clearCache() {
+            if (confirm('Are you sure you want to clear the cache?')) {
+                // TODO: Implement cache clearing
+                console.log('Clearing cache...');
+            }
+        }
+
+        function backupData() {
+            // TODO: Implement data backup
+            console.log('Backing up data...');
+        }
+
+        function resetConfig() {
+            if (confirm('Are you sure you want to reset all configuration to defaults? This action cannot be undone.')) {
+                // TODO: Implement config reset
+                console.log('Resetting configuration...');
+            }
+        }
+
+        // Initialize admin page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadConfig();
+            refreshSystemStatus();
+        });
+    </script>
+</body>
+</html>
