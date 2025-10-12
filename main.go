@@ -56,6 +56,9 @@ func main() {
 	router.Use(gin.Recovery())
 	router.Use(corsMiddleware())
 
+	// Load HTML templates
+	router.LoadHTMLGlob("web/*.html")
+
 	// Register routes
 	registerRoutes(router, ingestionService, webService)
 

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.title}}</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>{{.title}}</h1>
+            <nav class="nav">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/dashboard" class="nav-link active">Dashboard</a>
+                <a href="/metrics" class="nav-link">Metrics</a>
+                <a href="/traces" class="nav-link">Traces</a>
+                <a href="/logs" class="nav-link">Logs</a>
+            </nav>
+        </header>
+
+        <main class="main">
+            <div class="dashboard">
+                <h2>System Overview</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Services</h3>
+                        <div id="service-count" class="stat-value">-</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <h3>Traces</h3>
+                        <div id="trace-count" class="stat-value">-</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <h3>Metrics</h3>
+                        <div id="metric-count" class="stat-value">-</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <h3>Logs</h3>
+                        <div id="log-count" class="stat-value">-</div>
+                    </div>
+                </div>
+
+                <div class="recent-data">
+                    <h3>Recent Activity</h3>
+                    <div id="recent-traces" class="data-section">
+                        <h4>Latest Traces</h4>
+                        <div id="traces-list" class="data-list">
+                            <div class="loading">Loading...</div>
+                        </div>
+                    </div>
+                    
+                    <div id="recent-logs" class="data-section">
+                        <h4>Latest Logs</h4>
+                        <div id="logs-list" class="data-list">
+                            <div class="loading">Loading...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2024 Open-Telemorph-Prime. Made with ❤️ for developers.</p>
+        </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+    <script>
+        // Dashboard-specific JavaScript
+        async function loadDashboardData() {
+            try {
+                // Load services
+                const services = await window.telemorphApp.fetchServices();
+                document.getElementById('service-count').textContent = services.length;
+
+                // Load recent traces
+                const traces = await window.telemorphApp.getTraces(5, 0);
+                displayTraces(traces.data || []);
+
+                // Load recent logs
+                const logs = await window.telemorphApp.getLogs(5, 0);
+                displayLogs(logs.data || []);
+
+                // Update counts
+                document.getElementById('trace-count').textContent = traces.total || 0;
+                document.getElementById('log-count').textContent = logs.total || 0;
+
+            } catch (error) {
+                console.error('Failed to load dashboard data:', error);
+            }
+        }
+
+        function displayTraces(traces) {
+            const container = document.getElementById('traces-list');
+            if (traces.length === 0) {
+                container.innerHTML = '<div class="no-data">No traces found</div>';
+                return;
+            }
+
+            container.innerHTML = traces.map(trace => `
+                <div class="trace-item">
+                    <div class="trace-info">
+                        <strong>${trace.operation_name}</strong>
+                        <span class="service">${trace.service_name}</span>
+                    </div>
+                    <div class="trace-meta">
+                        <span class="duration">${window.telemorphApp.formatDuration(trace.duration_nanos)}</span>
+                        <span class="status ${trace.status_code.toLowerCase()}">${trace.status_code}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayLogs(logs) {
+            const container = document.getElementById('logs-list');
+            if (logs.length === 0) {
+                container.innerHTML = '<div class="no-data">No logs found</div>';
+                return;
+            }
+
+            container.innerHTML = logs.map(log => `
+                <div class="log-item">
+                    <div class="log-meta">
+                        <span class="level ${log.level.toLowerCase()}">${log.level}</span>
+                        <span class="service">${log.service_name}</span>
+                        <span class="timestamp">${window.telemorphApp.formatTimestamp(log.timestamp)}</span>
+                    </div>
+                    <div class="log-message">${log.message}</div>
+                </div>
+            `).join('');
+        }
+
+        // Load data when page loads
+        document.addEventListener('DOMContentLoaded', loadDashboardData);
+    </script>
+</body>
+</html>

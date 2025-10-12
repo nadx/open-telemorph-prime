@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.title}}</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>{{.title}}</h1>
+            <nav class="nav">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/dashboard" class="nav-link">Dashboard</a>
+                <a href="/metrics" class="nav-link">Metrics</a>
+                <a href="/traces" class="nav-link">Traces</a>
+                <a href="/logs" class="nav-link active">Logs</a>
+            </nav>
+        </header>
+
+        <main class="main">
+            <div class="logs-page">
+                <h2>Logs Viewer</h2>
+                
+                <div class="query-section">
+                    <h3>Search Logs</h3>
+                    <div class="query-form">
+                        <input type="text" id="log-query" placeholder="Enter search term..." class="query-input">
+                        <button onclick="searchLogs()" class="btn">Search</button>
+                        <button onclick="loadAllLogs()" class="btn btn-secondary">Load All</button>
+                    </div>
+                </div>
+
+                <div class="filters">
+                    <h3>Filters</h3>
+                    <div class="filter-row">
+                        <select id="service-filter" class="filter-select">
+                            <option value="">All Services</option>
+                        </select>
+                        <select id="level-filter" class="filter-select">
+                            <option value="">All Levels</option>
+                            <option value="DEBUG">DEBUG</option>
+                            <option value="INFO">INFO</option>
+                            <option value="WARN">WARN</option>
+                            <option value="ERROR">ERROR</option>
+                        </select>
+                        <input type="number" id="limit-filter" placeholder="Limit" value="100" class="filter-input">
+                        <button onclick="applyFilters()" class="btn">Apply</button>
+                    </div>
+                </div>
+
+                <div class="logs-results">
+                    <h3>Results</h3>
+                    <div id="logs-container">
+                        <div class="loading">Loading logs...</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2024 Open-Telemorph-Prime. Made with ❤️ for developers.</p>
+        </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+    <script>
+        // Logs-specific JavaScript
+        let currentFilters = {
+            service: '',
+            level: '',
+            limit: 100,
+            offset: 0
+        };
+
+        async function loadAllLogs() {
+            try {
+                const logs = await window.telemorphApp.getLogs(currentFilters.limit, currentFilters.offset);
+                displayLogs(logs.data || []);
+            } catch (error) {
+                console.error('Failed to load logs:', error);
+                document.getElementById('logs-container').innerHTML = '<div class="error">Failed to load logs</div>';
+            }
+        }
+
+        async function searchLogs() {
+            const query = document.getElementById('log-query').value;
+            if (!query.trim()) {
+                loadAllLogs();
+                return;
+            }
+
+            try {
+                const result = await window.telemorphApp.query('logs', query, currentFilters.limit, currentFilters.offset);
+                displayLogs(result.data || []);
+            } catch (error) {
+                console.error('Failed to search logs:', error);
+                document.getElementById('logs-container').innerHTML = '<div class="error">Search failed</div>';
+            }
+        }
+
+        function displayLogs(logs) {
+            const container = document.getElementById('logs-container');
+            
+            if (logs.length === 0) {
+                container.innerHTML = '<div class="no-data">No logs found</div>';
+                return;
+            }
+
+            const logsHtml = logs.map(log => `
+                <div class="log-entry">
+                    <div class="log-header">
+                        <span class="log-level ${log.level.toLowerCase()}">${log.level}</span>
+                        <span class="log-service">${log.service_name || 'unknown'}</span>
+                        <span class="log-timestamp">${window.telemorphApp.formatTimestamp(log.timestamp)}</span>
+                        ${log.trace_id ? `<span class="log-trace-id">Trace: ${log.trace_id}</span>` : ''}
+                    </div>
+                    <div class="log-message">${log.message}</div>
+                    ${log.attributes && log.attributes !== '{}' ? `<div class="log-attributes"><code>${log.attributes}</code></div>` : ''}
+                </div>
+            `).join('');
+            
+            container.innerHTML = logsHtml;
+        }
+
+        async function loadServices() {
+            try {
+                const services = await window.telemorphApp.fetchServices();
+                const select = document.getElementById('service-filter');
+                select.innerHTML = '<option value="">All Services</option>' +
+                    services.map(service => `<option value="${service}">${service}</option>`).join('');
+            } catch (error) {
+                console.error('Failed to load services:', error);
+            }
+        }
+
+        function applyFilters() {
+            currentFilters.service = document.getElementById('service-filter').value;
+            currentFilters.level = document.getElementById('level-filter').value;
+            currentFilters.limit = parseInt(document.getElementById('limit-filter').value) || 100;
+            currentFilters.offset = 0;
+            loadAllLogs();
+        }
+
+        // Load data when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadServices();
+            loadAllLogs();
+        });
+    </script>
+</body>
+</html>

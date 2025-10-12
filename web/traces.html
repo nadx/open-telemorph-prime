@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.title}}</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>{{.title}}</h1>
+            <nav class="nav">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/dashboard" class="nav-link">Dashboard</a>
+                <a href="/metrics" class="nav-link">Metrics</a>
+                <a href="/traces" class="nav-link active">Traces</a>
+                <a href="/logs" class="nav-link">Logs</a>
+            </nav>
+        </header>
+
+        <main class="main">
+            <div class="traces-page">
+                <h2>Traces Explorer</h2>
+                
+                <div class="query-section">
+                    <h3>Search Traces</h3>
+                    <div class="query-form">
+                        <input type="text" id="trace-query" placeholder="Enter trace ID, operation name, or service..." class="query-input">
+                        <button onclick="searchTraces()" class="btn">Search</button>
+                        <button onclick="loadAllTraces()" class="btn btn-secondary">Load All</button>
+                    </div>
+                </div>
+
+                <div class="filters">
+                    <h3>Filters</h3>
+                    <div class="filter-row">
+                        <select id="service-filter" class="filter-select">
+                            <option value="">All Services</option>
+                        </select>
+                        <select id="status-filter" class="filter-select">
+                            <option value="">All Status</option>
+                            <option value="OK">OK</option>
+                            <option value="ERROR">ERROR</option>
+                        </select>
+                        <input type="number" id="limit-filter" placeholder="Limit" value="100" class="filter-input">
+                        <button onclick="applyFilters()" class="btn">Apply</button>
+                    </div>
+                </div>
+
+                <div class="traces-results">
+                    <h3>Results</h3>
+                    <div id="traces-container">
+                        <div class="loading">Loading traces...</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2024 Open-Telemorph-Prime. Made with ❤️ for developers.</p>
+        </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+    <script>
+        // Traces-specific JavaScript
+        let currentFilters = {
+            service: '',
+            status: '',
+            limit: 100,
+            offset: 0
+        };
+
+        async function loadAllTraces() {
+            try {
+                const traces = await window.telemorphApp.getTraces(currentFilters.limit, currentFilters.offset);
+                displayTraces(traces.data || []);
+            } catch (error) {
+                console.error('Failed to load traces:', error);
+                document.getElementById('traces-container').innerHTML = '<div class="error">Failed to load traces</div>';
+            }
+        }
+
+        async function searchTraces() {
+            const query = document.getElementById('trace-query').value;
+            if (!query.trim()) {
+                loadAllTraces();
+                return;
+            }
+
+            try {
+                const result = await window.telemorphApp.query('traces', query, currentFilters.limit, currentFilters.offset);
+                displayTraces(result.data || []);
+            } catch (error) {
+                console.error('Failed to search traces:', error);
+                document.getElementById('traces-container').innerHTML = '<div class="error">Search failed</div>';
+            }
+        }
+
+        function displayTraces(traces) {
+            const container = document.getElementById('traces-container');
+            
+            if (traces.length === 0) {
+                container.innerHTML = '<div class="no-data">No traces found</div>';
+                return;
+            }
+
+            const table = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Trace ID</th>
+                            <th>Operation</th>
+                            <th>Service</th>
+                            <th>Duration</th>
+                            <th>Status</th>
+                            <th>Start Time</th>
+                            <th>Attributes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${traces.map(trace => `
+                            <tr>
+                                <td><code>${trace.trace_id}</code></td>
+                                <td><strong>${trace.operation_name}</strong></td>
+                                <td>${trace.service_name || '-'}</td>
+                                <td>${window.telemorphApp.formatDuration(trace.duration_nanos)}</td>
+                                <td><span class="status ${trace.status_code.toLowerCase()}">${trace.status_code}</span></td>
+                                <td>${window.telemorphApp.formatTimestamp(trace.start_time)}</td>
+                                <td><code>${trace.attributes || '{}'}</code></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = table;
+        }
+
+        async function loadServices() {
+            try {
+                const services = await window.telemorphApp.fetchServices();
+                const select = document.getElementById('service-filter');
+                select.innerHTML = '<option value="">All Services</option>' +
+                    services.map(service => `<option value="${service}">${service}</option>`).join('');
+            } catch (error) {
+                console.error('Failed to load services:', error);
+            }
+        }
+
+        function applyFilters() {
+            currentFilters.service = document.getElementById('service-filter').value;
+            currentFilters.status = document.getElementById('status-filter').value;
+            currentFilters.limit = parseInt(document.getElementById('limit-filter').value) || 100;
+            currentFilters.offset = 0;
+            loadAllTraces();
+        }
+
+        // Load data when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadServices();
+            loadAllTraces();
+        });
+    </script>
+</body>
+</html>
