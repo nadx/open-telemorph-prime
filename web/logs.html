@@ -190,9 +190,6 @@
                                         <label class="form-label">Service</label>
                                         <select class="form-select" id="service-filter">
                                             <option value="">All Services</option>
-                                            <option value="api-gateway">API Gateway</option>
-                                            <option value="payment-service">Payment Service</option>
-                                            <option value="user-service">User Service</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
@@ -248,24 +245,26 @@
                             </div>
                             <div class="card-content">
                                 <div class="data-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Timestamp</th>
-                                            <th>Level</th>
-                                            <th>Service</th>
-                                            <th>Message</th>
-                                            <th>Trace ID</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="logs-table-body">
-                                        <tr>
-                                            <td colspan="6" class="loading">
-                                                <div class="loading-spinner"></div>
-                                                Loading logs...
-                                            </td>
-                                        </tr>
-                                    </tbody>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Timestamp</th>
+                                                <th>Level</th>
+                                                <th>Service</th>
+                                                <th>Message</th>
+                                                <th>Trace ID</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="logs-table-body">
+                                            <tr>
+                                                <td colspan="6" class="loading">
+                                                    <div class="loading-spinner"></div>
+                                                    Loading logs...
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -278,17 +277,30 @@
     <script src="/static/app.js"></script>
     <script>
         // Logs-specific JavaScript
+        let currentFilters = {
+            service: '',
+            limit: 100,
+            offset: 0
+        };
+
         async function loadLogs() {
+            console.log('loadLogs called');
             try {
-                const response = await fetch('/api/v1/logs');
-                if (response.ok) {
-                    const logs = await response.json();
-                    displayLogs(logs);
-                } else {
-                    console.error('Failed to load logs');
+                console.log('Making direct API call...');
+                const response = await fetch(`/api/v1/logs?limit=${currentFilters.limit}&offset=${currentFilters.offset}`);
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
+                
+                const data = await response.json();
+                console.log('Logs response:', data);
+                console.log('Logs data:', data.data);
+                displayLogs(data.data || []);
             } catch (error) {
-                console.error('Error loading logs:', error);
+                console.error('Failed to load logs:', error);
+                document.getElementById('logs-container').innerHTML = '<div class="error">Failed to load logs: ' + error.message + '</div>';
             }
         }
 
@@ -346,8 +358,56 @@
             const limit = document.getElementById('limit-filter').value;
             
             console.log('Applying filters:', { service, level, timeRange, limit });
-            // TODO: Implement actual filtering
-            loadLogs();
+            
+            // Build query parameters
+            const params = new URLSearchParams();
+            if (service) params.append('service', service);
+            if (level) params.append('level', level);
+            if (timeRange) params.append('time_range', timeRange);
+            params.append('limit', limit || '100');
+            params.append('offset', '0');
+            
+            loadLogsWithFilters(params);
+        }
+
+        async function loadLogsWithFilters(params) {
+            console.log('loadLogsWithFilters called with params:', params.toString());
+            try {
+                console.log('Making API call...');
+                const response = await fetch('/api/v1/logs?limit=1000&offset=0');
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('Logs response:', data);
+                let logs = data.data || [];
+                
+                // Apply client-side filtering
+                const service = params.get('service');
+                const level = params.get('level');
+                const timeRange = params.get('time_range');
+                
+                console.log('Applying client-side filters:', { service, level, timeRange });
+                
+                logs = logs.filter(log => {
+                    if (service && log.service_name !== service) return false;
+                    if (level && log.level !== level) return false;
+                    // TODO: Implement time range filtering
+                    return true;
+                });
+                
+                console.log('Filtered logs count:', logs.length);
+                displayLogs(logs);
+            } catch (error) {
+                console.error('Failed to load filtered logs:', error);
+                const tbody = document.getElementById('logs-table-body');
+                if (tbody) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center error">Failed to load filtered logs: ' + error.message + '</td></tr>';
+                }
+            }
         }
 
         function refreshLogs() {
@@ -364,7 +424,35 @@
             console.log('Viewing log details:', logId);
         }
 
-        document.addEventListener('DOMContentLoaded', loadLogs);
+        async function loadServices() {
+            try {
+                console.log('Loading services...');
+                const response = await fetch('/api/v1/services');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('Services response:', data);
+                const services = data.services || [];
+                
+                const select = document.getElementById('service-filter');
+                select.innerHTML = '<option value="">All Services</option>' +
+                    services.map(service => `<option value="${service}">${service}</option>`).join('');
+                
+                console.log('Loaded services:', services);
+            } catch (error) {
+                console.error('Failed to load services:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load services and logs
+            loadServices();
+            
+            // Wait a bit longer for telemorphApp to be fully initialized
+            setTimeout(loadLogs, 500);
+        });
     </script>
 </body>
 </html>

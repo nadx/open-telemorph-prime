@@ -10,8 +10,11 @@ RUN apk add --no-cache git
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy source code
-COPY . .
+# Copy source code (only necessary files)
+COPY main.go ./
+COPY internal/ ./internal/
+COPY web/ ./web/
+COPY config.yaml ./
 
 # Build the application
 RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -o open-telemorph-prime .
@@ -19,8 +22,8 @@ RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -o open-telemorph-pr
 # Final stage
 FROM alpine:latest
 
-# Install ca-certificates and sqlite
-RUN apk --no-cache add ca-certificates sqlite
+# Install ca-certificates, sqlite, and wget for health checks
+RUN apk --no-cache add ca-certificates sqlite wget
 
 WORKDIR /app
 

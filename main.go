@@ -131,13 +131,8 @@ func registerRoutes(router *gin.Engine, ingestionService *ingestion.Service, web
 		admin.GET("/status", webService.GetSystemStatus)
 	}
 
-	// OTLP endpoints
-	otlp := router.Group("/v1")
-	{
-		otlp.POST("/traces", ingestionService.HandleTraces)
-		otlp.POST("/metrics", ingestionService.HandleMetrics)
-		otlp.POST("/logs", ingestionService.HandleLogs)
-	}
+	// OTLP endpoints are now served on dedicated ingestion ports (4317/4318)
+	// These are handled by the ingestion service directly
 
 	// Web UI
 	router.Static("/static", "./web/static")

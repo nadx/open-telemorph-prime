@@ -1,0 +1,41 @@
+# Git
+.git
+.gitignore
+
+# Documentation
+docs/
+README.md
+*.md
+
+# Test files
+test*.sh
+*_test.go
+
+# Development files
+Makefile
+.env
+.env.local
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+open-telemorph-prime
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Data directory (will be mounted as volume)
+data/
+
+# Temporary files
+*.tmp
+*.log

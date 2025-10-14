@@ -84,21 +84,26 @@ web:
 
 ## 📡 Sending Data
 
+Open-Telemorph-Prime uses standard OpenTelemetry Collector ports:
+- **Port 4317**: OTLP gRPC endpoint (for traces, metrics, logs)
+- **Port 4318**: OTLP HTTP endpoint (for traces, metrics, logs)  
+- **Port 8080**: Web UI and REST API
+
 ### HTTP Endpoint
 
 ```bash
 # Send traces
-curl -X POST http://localhost:8080/v1/traces \
+curl -X POST http://localhost:4318/v1/traces \
   -H "Content-Type: application/json" \
   -d '{"resourceSpans": [...]}'
 
 # Send metrics
-curl -X POST http://localhost:8080/v1/metrics \
+curl -X POST http://localhost:4318/v1/metrics \
   -H "Content-Type: application/json" \
   -d '{"resourceMetrics": [...]}'
 
 # Send logs
-curl -X POST http://localhost:8080/v1/logs \
+curl -X POST http://localhost:4318/v1/logs \
   -H "Content-Type: application/json" \
   -d '{"resourceLogs": [...]}'
 ```
@@ -106,7 +111,7 @@ curl -X POST http://localhost:8080/v1/logs \
 ### OpenTelemetry SDK Integration
 
 ```go
-// Go example
+// Go example - HTTP endpoint
 import (
     "go.opentelemetry.io/otel"
     "go.opentelemetry.io/otel/exporters/otlp/otlptrace/http"
@@ -114,8 +119,22 @@ import (
 
 exporter, err := otlptracehttp.New(
     context.Background(),
-    otlptracehttp.WithEndpoint("http://localhost:8080"),
+    otlptracehttp.WithEndpoint("http://localhost:4318"),
     otlptracehttp.WithInsecure(),
+)
+```
+
+```go
+// Go example - gRPC endpoint
+import (
+    "go.opentelemetry.io/otel"
+    "go.opentelemetry.io/otel/exporters/otlp/otlptrace/grpc"
+)
+
+exporter, err := otlptracegrpc.New(
+    context.Background(),
+    otlptracegrpc.WithEndpoint("localhost:4317"),
+    otlptracegrpc.WithInsecure(),
 )
 ```
 

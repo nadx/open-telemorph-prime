@@ -328,9 +328,26 @@
                                     <h4>Ingestion Configuration</h4>
                                     <div class="config-form">
                                         <div class="form-group">
-                                            <label class="form-label">API Endpoint</label>
-                                            <input type="text" class="form-input" id="ingestion-api-endpoint" value="0.0.0.0:9013" />
-                                            <div class="form-help">OTLP HTTP/gRPC endpoint</div>
+                                            <label class="form-label">HTTP Endpoint</label>
+                                            <div class="form-input-group">
+                                                <input type="text" class="form-input" id="ingestion-http-endpoint" value="0.0.0.0:4318" />
+                                                <label class="form-checkbox-label">
+                                                    <input type="checkbox" class="form-checkbox" id="ingestion-http-enabled" checked />
+                                                    <span>Enabled</span>
+                                                </label>
+                                            </div>
+                                            <div class="form-help">OTLP HTTP endpoint for traces, metrics, and logs</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">gRPC Endpoint</label>
+                                            <div class="form-input-group">
+                                                <input type="text" class="form-input" id="ingestion-grpc-endpoint" value="0.0.0.0:4317" />
+                                                <label class="form-checkbox-label">
+                                                    <input type="checkbox" class="form-checkbox" id="ingestion-grpc-enabled" checked />
+                                                    <span>Enabled</span>
+                                                </label>
+                                            </div>
+                                            <div class="form-help">OTLP gRPC endpoint for traces, metrics, and logs</div>
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label">Health Endpoint</label>
@@ -522,8 +539,11 @@
             
             // Populate ingestion config
             if (currentConfig.ingestion) {
-                document.getElementById('ingestion-api-endpoint').value = currentConfig.ingestion.api_endpoint || '0.0.0.0:9013';
+                document.getElementById('ingestion-http-endpoint').value = currentConfig.ingestion.http_endpoint || '0.0.0.0:4318';
+                document.getElementById('ingestion-grpc-endpoint').value = currentConfig.ingestion.grpc_endpoint || '0.0.0.0:4317';
                 document.getElementById('ingestion-health-endpoint').value = currentConfig.ingestion.health_endpoint || '0.0.0.0:8080';
+                document.getElementById('ingestion-http-enabled').checked = currentConfig.ingestion.http_enabled !== false;
+                document.getElementById('ingestion-grpc-enabled').checked = currentConfig.ingestion.grpc_enabled !== false;
             }
             
             // Populate web config
@@ -555,8 +575,11 @@
                     retention_days: parseInt(document.getElementById('storage-retention').value)
                 },
                 ingestion: {
-                    api_endpoint: document.getElementById('ingestion-api-endpoint').value,
+                    http_endpoint: document.getElementById('ingestion-http-endpoint').value,
+                    grpc_endpoint: document.getElementById('ingestion-grpc-endpoint').value,
                     health_endpoint: document.getElementById('ingestion-health-endpoint').value,
+                    http_enabled: document.getElementById('ingestion-http-enabled').checked,
+                    grpc_enabled: document.getElementById('ingestion-grpc-enabled').checked,
                     batch_size: parseInt(document.getElementById('ingestion-batch-size').value),
                     batch_timeout: document.getElementById('ingestion-batch-timeout').value
                 },

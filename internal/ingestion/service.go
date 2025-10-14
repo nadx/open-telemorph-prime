@@ -3,7 +3,9 @@ package ingestion
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"time"
 
@@ -11,11 +13,14 @@ import (
 	"open-telemorph-prime/internal/storage"
 
 	"github.com/gin-gonic/gin"
+	"google.golang.org/grpc"
 )
 
 type Service struct {
-	storage storage.Storage
-	config  config.IngestionConfig
+	storage    storage.Storage
+	config     config.IngestionConfig
+	httpServer *http.Server
+	grpcServer *grpc.Server
 }
 
 func NewService(storage storage.Storage, config config.IngestionConfig) *Service {
@@ -26,15 +31,90 @@ func NewService(storage storage.Storage, config config.IngestionConfig) *Service
 }
 
 func (s *Service) Start() error {
-	// For now, we'll just log that the service is starting
-	// In a full implementation, this would start gRPC and HTTP servers
-	log.Printf("Ingestion service started on ports gRPC:%d HTTP:%d",
-		s.config.GRPCPort, s.config.HTTPPort)
+	// Start HTTP server for OTLP HTTP endpoints if enabled
+	if s.config.HTTPEnabled {
+		go s.startHTTPServer()
+		log.Printf("OTLP HTTP server enabled on port %d", s.config.HTTPPort)
+	} else {
+		log.Printf("OTLP HTTP server disabled")
+	}
+
+	// Start gRPC server for OTLP gRPC endpoints if enabled
+	if s.config.GRPCEnabled {
+		go s.startGRPCServer()
+		log.Printf("OTLP gRPC server enabled on port %d", s.config.GRPCPort)
+	} else {
+		log.Printf("OTLP gRPC server disabled")
+	}
+
 	return nil
+}
+
+func (s *Service) startHTTPServer() {
+	// Create Gin router for OTLP HTTP endpoints
+	router := gin.New()
+	router.Use(gin.Logger())
+	router.Use(gin.Recovery())
+
+	// OTLP HTTP endpoints
+	otlp := router.Group("/v1")
+	{
+		otlp.POST("/traces", s.HandleTraces)
+		otlp.POST("/metrics", s.HandleMetrics)
+		otlp.POST("/logs", s.HandleLogs)
+	}
+
+	// Create HTTP server
+	s.httpServer = &http.Server{
+		Addr:    fmt.Sprintf(":%d", s.config.HTTPPort),
+		Handler: router,
+	}
+
+	log.Printf("Starting OTLP HTTP server on port %d", s.config.HTTPPort)
+	if err := s.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		log.Printf("Failed to start OTLP HTTP server: %v", err)
+	}
+}
+
+func (s *Service) startGRPCServer() {
+	// Create a listener on the gRPC port
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", s.config.GRPCPort))
+	if err != nil {
+		log.Printf("Failed to listen on gRPC port %d: %v", s.config.GRPCPort, err)
+		return
+	}
+
+	// Create gRPC server
+	s.grpcServer = grpc.NewServer()
+
+	// TODO: Register OTLP gRPC services here
+	// For now, we'll just start the server without any services
+	// In a full implementation, you would register:
+	// - traceservice.RegisterTraceServiceServer(s.grpcServer, s)
+	// - metricsservice.RegisterMetricsServiceServer(s.grpcServer, s)
+	// - logsservice.RegisterLogsServiceServer(s.grpcServer, s)
+
+	log.Printf("Starting OTLP gRPC server on port %d", s.config.GRPCPort)
+	if err := s.grpcServer.Serve(lis); err != nil {
+		log.Printf("Failed to start gRPC server: %v", err)
+	}
 }
 
 func (s *Service) Stop(ctx context.Context) error {
 	log.Println("Stopping ingestion service...")
+
+	// Shutdown HTTP server
+	if s.httpServer != nil {
+		if err := s.httpServer.Shutdown(ctx); err != nil {
+			log.Printf("Error shutting down OTLP HTTP server: %v", err)
+		}
+	}
+
+	// Shutdown gRPC server
+	if s.grpcServer != nil {
+		s.grpcServer.GracefulStop()
+	}
+
 	return nil
 }
 
