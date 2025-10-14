@@ -21,7 +21,7 @@ import (
 
 var (
 	configPath = flag.String("config", "config.yaml", "Path to configuration file")
-	version    = "0.1.0"
+	version    = "0.2.1"
 )
 
 func main() {
@@ -44,7 +44,7 @@ func main() {
 	ingestionService := ingestion.NewService(storage, cfg.Ingestion)
 
 	// Initialize web service
-	webService := web.NewService(storage, cfg.Web)
+	webService := web.NewService(storage, cfg.Web, version)
 
 	// Set up Gin router
 	if cfg.Server.Environment == "production" {
