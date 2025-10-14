@@ -5,12 +5,12 @@ services:
     build: .
     container_name: open-telemorph-prime
     ports:
-      - "8080:8080"  # Web UI and API
-      - "4317:4317"  # OTLP gRPC
-      - "4318:4318"  # OTLP HTTP
+      - "8080:8080"  # Web UI and REST API
+      - "4317:4317"  # OTLP gRPC endpoint (traces, metrics, logs)
+      - "4318:4318"  # OTLP HTTP endpoint (traces, metrics, logs)
     volumes:
       - ./data:/app/data
-      - ./config.yaml:/app/config.yaml
+      - ./config.yaml:/app/config.yaml:ro
     environment:
       - CONFIG_PATH=/app/config.yaml
     restart: unless-stopped

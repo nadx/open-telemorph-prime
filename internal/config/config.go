@@ -33,6 +33,8 @@ type StorageConfig struct {
 type IngestionConfig struct {
 	GRPCPort      int           `yaml:"grpc_port"`
 	HTTPPort      int           `yaml:"http_port"`
+	GRPCEnabled   bool          `yaml:"grpc_enabled"`
+	HTTPEnabled   bool          `yaml:"http_enabled"`
 	BatchSize     int           `yaml:"batch_size"`
 	FlushInterval time.Duration `yaml:"flush_interval"`
 }
@@ -123,6 +125,11 @@ func (c *Config) setDefaults() {
 	if c.Ingestion.HTTPPort == 0 {
 		c.Ingestion.HTTPPort = 4318
 	}
+	if !c.Ingestion.GRPCEnabled && !c.Ingestion.HTTPEnabled {
+		// If neither is explicitly set, enable both by default
+		c.Ingestion.GRPCEnabled = true
+		c.Ingestion.HTTPEnabled = true
+	}
 	if c.Ingestion.BatchSize == 0 {
 		c.Ingestion.BatchSize = 1000
 	}
@@ -162,6 +169,8 @@ func DefaultConfig() *Config {
 		Ingestion: IngestionConfig{
 			GRPCPort:      4317,
 			HTTPPort:      4318,
+			GRPCEnabled:   true,
+			HTTPEnabled:   true,
 			BatchSize:     1000,
 			FlushInterval: 5 * time.Second,
 		},

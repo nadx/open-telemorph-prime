@@ -21,7 +21,7 @@ import (
 
 var (
 	configPath = flag.String("config", "config.yaml", "Path to configuration file")
-	version    = "0.1.0"
+	version    = "0.2.1"
 )
 
 func main() {
@@ -44,7 +44,7 @@ func main() {
 	ingestionService := ingestion.NewService(storage, cfg.Ingestion)
 
 	// Initialize web service
-	webService := web.NewService(storage, cfg.Web)
+	webService := web.NewService(storage, cfg.Web, version)
 
 	// Set up Gin router
 	if cfg.Server.Environment == "production" {
@@ -131,13 +131,8 @@ func registerRoutes(router *gin.Engine, ingestionService *ingestion.Service, web
 		admin.GET("/status", webService.GetSystemStatus)
 	}
 
-	// OTLP endpoints
-	otlp := router.Group("/v1")
-	{
-		otlp.POST("/traces", ingestionService.HandleTraces)
-		otlp.POST("/metrics", ingestionService.HandleMetrics)
-		otlp.POST("/logs", ingestionService.HandleLogs)
-	}
+	// OTLP endpoints are now served on dedicated ingestion ports (4317/4318)
+	// These are handled by the ingestion service directly
 
 	// Web UI
 	router.Static("/static", "./web/static")

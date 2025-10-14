@@ -136,7 +136,7 @@
                     <div class="sidebar-footer">
                         <div class="version-info">
                             <div>Phase 4 Frontend</div>
-                            <div>v0.1.0</div>
+                            <div>{{.version}}</div>
                         </div>
                     </div>
                 </nav>
@@ -168,36 +168,90 @@
                 </div>
 
                 <div class="page-content">
-            <div class="metrics-page">
-                <h2>Metrics Explorer</h2>
-                
-                <div class="query-section">
-                    <h3>Query Metrics</h3>
-                    <div class="query-form">
-                        <input type="text" id="metric-query" placeholder="Enter metric name or query..." class="query-input">
-                        <button onclick="searchMetrics()" class="btn">Search</button>
-                        <button onclick="loadAllMetrics()" class="btn btn-secondary">Load All</button>
-                    </div>
-                </div>
+                    <div class="metrics-explorer">
+                        <!-- Filters -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Search & Filters</h3>
+                            </div>
+                            <div class="card-content">
+                                <div class="filters-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">Service</label>
+                                        <select class="form-select" id="service-filter">
+                                            <option value="">All Services</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Metric Name</label>
+                                        <input type="text" class="form-input" id="metric-name-filter" placeholder="e.g., test.counter" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Limit</label>
+                                        <input type="number" class="form-input" id="limit-filter" placeholder="100" value="100" />
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-primary" onclick="applyFilters()">
+                                            <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M3 6h18"></path>
+                                                <path d="M7 12h10"></path>
+                                                <path d="M10 18h4"></path>
+                                            </svg>
+                                            Apply Filters
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                <div class="filters">
-                    <h3>Filters</h3>
-                    <div class="filter-row">
-                        <select id="service-filter" class="filter-select">
-                            <option value="">All Services</option>
-                        </select>
-                        <input type="number" id="limit-filter" placeholder="Limit" value="100" class="filter-input">
-                        <button onclick="applyFilters()" class="btn">Apply</button>
+                        <!-- Metrics Table -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Metrics</h3>
+                                <div class="card-actions">
+                                    <button class="btn btn-outline btn-sm" onclick="loadMetrics()">
+                                        <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M23 4v6h-6"></path>
+                                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                        </svg>
+                                        Refresh
+                                    </button>
+                                    <button class="btn btn-outline btn-sm">
+                                        <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="7,10 12,15 17,10"></polyline>
+                                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                                        </svg>
+                                        Export
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="data-table">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Metric Name</th>
+                                                <th>Value</th>
+                                                <th>Service</th>
+                                                <th>Timestamp</th>
+                                                <th>Labels</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="metrics-table-body">
+                                            <tr>
+                                                <td colspan="6" class="loading">
+                                                    <div class="loading-spinner"></div>
+                                                    Loading metrics...
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-
-                <div class="metrics-results">
-                    <h3>Results</h3>
-                    <div id="metrics-container">
-                        <div class="loading">Loading metrics...</div>
-                    </div>
-                </div>
-            </div>
                 </div>
             </main>
         </div>
@@ -213,83 +267,178 @@
         };
 
         async function loadAllMetrics() {
+            console.log('loadAllMetrics called');
             try {
-                const metrics = await window.telemorphApp.getMetrics(currentFilters.limit, currentFilters.offset);
-                displayMetrics(metrics.data || []);
+                console.log('Making direct API call...');
+                const response = await fetch(`/api/v1/metrics?limit=${currentFilters.limit}&offset=${currentFilters.offset}`);
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('Metrics response:', data);
+                console.log('Metrics data:', data.data);
+                displayMetrics(data.data || []);
             } catch (error) {
                 console.error('Failed to load metrics:', error);
-                document.getElementById('metrics-container').innerHTML = '<div class="error">Failed to load metrics</div>';
+                const tbody = document.getElementById('metrics-table-body');
+                if (tbody) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center error">Failed to load metrics: ' + error.message + '</td></tr>';
+                }
+            }
+        }
+
+        // Alias for loadMetrics
+        async function loadMetrics() {
+            await loadAllMetrics();
+        }
+
+        function formatTimestamp(timestamp) {
+            if (!timestamp) return 'N/A';
+            try {
+                const date = new Date(timestamp);
+                return date.toLocaleString();
+            } catch (e) {
+                return timestamp;
             }
         }
 
         async function searchMetrics() {
-            const query = document.getElementById('metric-query').value;
+            const query = document.getElementById('metric-name-filter').value;
             if (!query.trim()) {
                 loadAllMetrics();
                 return;
             }
 
             try {
-                const result = await window.telemorphApp.query('metrics', query, currentFilters.limit, currentFilters.offset);
-                displayMetrics(result.data || []);
+                console.log('Searching for metrics with query:', query);
+                const response = await fetch(`/api/v1/metrics?limit=${currentFilters.limit}&offset=${currentFilters.offset}&search=${encodeURIComponent(query)}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('Search response:', data);
+                displayMetrics(data.data || []);
             } catch (error) {
                 console.error('Failed to search metrics:', error);
-                document.getElementById('metrics-container').innerHTML = '<div class="error">Search failed</div>';
+                const tbody = document.getElementById('metrics-table-body');
+                if (tbody) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center error">Search failed: ' + error.message + '</td></tr>';
+                }
             }
         }
 
         function displayMetrics(metrics) {
-            const container = document.getElementById('metrics-container');
-            
-            if (metrics.length === 0) {
-                container.innerHTML = '<div class="no-data">No metrics found</div>';
+            console.log('displayMetrics called with:', metrics);
+            const tbody = document.getElementById('metrics-table-body');
+            console.log('tbody element:', tbody);
+            if (!tbody) {
+                console.error('metrics-table-body not found');
                 return;
             }
 
-            const table = `
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Metric Name</th>
-                            <th>Value</th>
-                            <th>Service</th>
-                            <th>Timestamp</th>
-                            <th>Labels</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${metrics.map(metric => `
-                            <tr>
-                                <td><strong>${metric.metric_name}</strong></td>
-                                <td>${metric.value}</td>
-                                <td>${metric.service_name || '-'}</td>
-                                <td>${window.telemorphApp.formatTimestamp(metric.timestamp)}</td>
-                                <td><code>${metric.labels || '{}'}</code></td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            `;
-            
-            container.innerHTML = table;
+            if (metrics.length === 0) {
+                console.log('No metrics to display');
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center">No metrics found</td></tr>';
+                return;
+            }
+
+            console.log('Displaying metrics:', metrics.length);
+            tbody.innerHTML = metrics.map(metric => `
+                <tr>
+                    <td><strong>${metric.metric_name || 'Unknown'}</strong></td>
+                    <td>${metric.value || 'N/A'}</td>
+                    <td>${metric.service_name || '-'}</td>
+                    <td>${formatTimestamp(metric.timestamp)}</td>
+                    <td><code>${metric.labels || '{}'}</code></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline" onclick="viewMetricDetails('${metric.metric_name}')">
+                            View
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
         }
 
         async function loadServices() {
             try {
-                const services = await window.telemorphApp.fetchServices();
+                console.log('Loading services...');
+                const response = await fetch('/api/v1/services');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('Services response:', data);
+                const services = data.services || [];
+                
                 const select = document.getElementById('service-filter');
                 select.innerHTML = '<option value="">All Services</option>' +
                     services.map(service => `<option value="${service}">${service}</option>`).join('');
+                
+                console.log('Loaded services:', services);
             } catch (error) {
                 console.error('Failed to load services:', error);
             }
         }
 
         function applyFilters() {
-            currentFilters.service = document.getElementById('service-filter').value;
-            currentFilters.limit = parseInt(document.getElementById('limit-filter').value) || 100;
-            currentFilters.offset = 0;
-            loadAllMetrics();
+            const service = document.getElementById('service-filter').value;
+            const metricName = document.getElementById('metric-name-filter').value;
+            const limit = parseInt(document.getElementById('limit-filter').value) || 100;
+            
+            console.log('Applying filters:', { service, metricName, limit });
+            
+            // Build query parameters
+            const params = new URLSearchParams();
+            if (service) params.append('service', service);
+            if (metricName) params.append('search', metricName);
+            params.append('limit', limit.toString());
+            params.append('offset', '0');
+            
+            loadMetricsWithFilters(params);
+        }
+
+        async function loadMetricsWithFilters(params) {
+            console.log('loadMetricsWithFilters called with params:', params.toString());
+            try {
+                console.log('Making API call...');
+                const response = await fetch('/api/v1/metrics?limit=1000&offset=0');
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('Metrics response:', data);
+                let metrics = data.data || [];
+                
+                // Apply client-side filtering
+                const service = params.get('service');
+                const search = params.get('search');
+                
+                console.log('Applying client-side filters:', { service, search });
+                
+                metrics = metrics.filter(metric => {
+                    if (service && metric.service_name !== service) return false;
+                    if (search && !metric.metric_name?.toLowerCase().includes(search.toLowerCase())) return false;
+                    return true;
+                });
+                
+                console.log('Filtered metrics count:', metrics.length);
+                displayMetrics(metrics);
+            } catch (error) {
+                console.error('Failed to load filtered metrics:', error);
+                const tbody = document.getElementById('metrics-table-body');
+                if (tbody) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center error">Failed to load filtered metrics: ' + error.message + '</td></tr>';
+                }
+            }
         }
 
         // Load data when page loads

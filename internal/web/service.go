@@ -13,12 +13,14 @@ import (
 type Service struct {
 	storage storage.Storage
 	config  config.WebConfig
+	version string
 }
 
-func NewService(storage storage.Storage, config config.WebConfig) *Service {
+func NewService(storage storage.Storage, config config.WebConfig, version string) *Service {
 	return &Service{
 		storage: storage,
 		config:  config,
+		version: version,
 	}
 }
 
@@ -136,64 +138,73 @@ func (s *Service) Query(c *gin.Context) {
 // Web UI handlers
 func (s *Service) Index(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.html", gin.H{
-		"title": s.config.Title,
-		"theme": s.config.Theme,
+		"title":   s.config.Title,
+		"theme":   s.config.Theme,
+		"version": s.version,
 	})
 }
 
 func (s *Service) Dashboard(c *gin.Context) {
 	c.HTML(http.StatusOK, "dashboard.html", gin.H{
-		"title": s.config.Title + " - Dashboard",
-		"theme": s.config.Theme,
+		"title":   s.config.Title + " - Dashboard",
+		"theme":   s.config.Theme,
+		"version": s.version,
 	})
 }
 
 func (s *Service) MetricsPage(c *gin.Context) {
 	c.HTML(http.StatusOK, "metrics.html", gin.H{
-		"title": s.config.Title + " - Metrics",
-		"theme": s.config.Theme,
+		"title":   s.config.Title + " - Metrics",
+		"theme":   s.config.Theme,
+		"version": s.version,
 	})
 }
 
 func (s *Service) TracesPage(c *gin.Context) {
 	c.HTML(http.StatusOK, "traces.html", gin.H{
-		"title": s.config.Title + " - Traces",
-		"theme": s.config.Theme,
+		"title":   s.config.Title + " - Traces",
+		"theme":   s.config.Theme,
+		"version": s.version,
 	})
 }
 
 func (s *Service) LogsPage(c *gin.Context) {
 	c.HTML(http.StatusOK, "logs.html", gin.H{
-		"title": s.config.Title + " - Logs",
-		"theme": s.config.Theme,
+		"title":   s.config.Title + " - Logs",
+		"theme":   s.config.Theme,
+		"version": s.version,
 	})
 }
 
 func (s *Service) ServicesPage(c *gin.Context) {
 	c.HTML(http.StatusOK, "services.html", gin.H{
-		"title": s.config.Title + " - Services",
-		"theme": s.config.Theme,
+		"title":   s.config.Title + " - Services",
+		"theme":   s.config.Theme,
+		"version": s.version,
 	})
 }
 
 func (s *Service) AlertsPage(c *gin.Context) {
 	c.HTML(http.StatusOK, "alerts.html", gin.H{
-		"title": s.config.Title + " - Alerts",
-		"theme": s.config.Theme,
+		"title":   s.config.Title + " - Alerts",
+		"theme":   s.config.Theme,
+		"version": s.version,
 	})
 }
 
 func (s *Service) QueryPage(c *gin.Context) {
 	c.HTML(http.StatusOK, "query.html", gin.H{
-		"title": s.config.Title + " - Query Builder",
-		"theme": s.config.Theme,
+		"title":   s.config.Title + " - Query Builder",
+		"theme":   s.config.Theme,
+		"version": s.version,
 	})
 }
 
 func (s *Service) AdminPage(c *gin.Context) {
 	c.HTML(http.StatusOK, "admin.html", gin.H{
-		"title": s.config.Title + " - Administration",
-		"theme": s.config.Theme,
+		"title":   s.config.Title + " - Administration",
+		"theme":   s.config.Theme,
+		"version": s.version,
 	})
 }
 
