@@ -18,6 +18,23 @@ docker-compose up -d
 open http://localhost:8080
 ```
 
+#### Choosing Go Version for Docker Builds
+
+Open-Telemorph-Prime requires Go ≥1.24. To maintain compatibility, you can specify which Go version to use when building the Docker image:
+
+In your `Dockerfile`:
+```dockerfile
+ARG GO_VERSION=1.25
+FROM golang:${GO_VERSION}-alpine AS builder
+```
+
+To build with a specific Go version (e.g., Go 1.25):
+```bash
+docker build --build-arg GO_VERSION=1.25 -t open-telemorph-prime .
+```
+
+If you need to support older Go versions (where compatible with your go.mod), modify the `GO_VERSION` arg accordingly.
+
 ### Option 2: Direct Binary
 
 ```bash
@@ -35,7 +52,7 @@ open http://localhost:8080
 ### Option 3: Build from Source
 
 ```bash
-# Prerequisites: Go 1.21+
+# Prerequisites: Go 1.24+
 git clone https://github.com/your-org/open-telemorph-prime.git
 cd open-telemorph-prime
 
@@ -184,7 +201,7 @@ exporter, err := otlptracegrpc.New(
 ## 🛠️ Development
 
 ### Prerequisites
-- Go 1.21+
+- Go 1.24+
 - Docker (optional)
 - SQLite3 (for local development)
 
