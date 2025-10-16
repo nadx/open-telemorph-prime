@@ -1,5 +1,5 @@
 # Build stage
-ARG GO_VERSION=1.25
+ARG GO_VERSION=1.24
 FROM golang:${GO_VERSION}-alpine AS builder
 
 WORKDIR /app
@@ -18,7 +18,7 @@ COPY web/ ./web/
 COPY config.yaml ./
 
 # Build the application
-RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -o open-telemorph-prime .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o open-telemorph-prime .
 
 # Final stage
 FROM alpine:latest

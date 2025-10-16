@@ -8,7 +8,7 @@ import (
 
 	"open-telemorph-prime/internal/config"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "modernc.org/sqlite"
 )
 
 type SQLiteStorage struct {
@@ -58,7 +58,7 @@ func NewSQLiteStorage(cfg config.StorageConfig) (*SQLiteStorage, error) {
 		return nil, fmt.Errorf("failed to create data directory: %w", err)
 	}
 
-	db, err := sql.Open("sqlite3", cfg.Path+"?_journal_mode=WAL&_synchronous=NORMAL&_cache_size=1000")
+	db, err := sql.Open("sqlite", cfg.Path+"?_journal_mode=WAL&_synchronous=NORMAL&_cache_size=1000")
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
