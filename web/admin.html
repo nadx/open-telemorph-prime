@@ -390,6 +390,14 @@
                                             </select>
                                             <div class="form-help">Default theme for the web interface</div>
                                         </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Dogfood Mode</label>
+                                            <div class="form-checkbox-container">
+                                                <input type="checkbox" class="form-checkbox" id="web-dogfood" />
+                                                <label for="web-dogfood" class="form-checkbox-label">Enable self-monitoring</label>
+                                            </div>
+                                            <div class="form-help">Monitor Open-Telemorph-Prime itself and show it as a service in the UI</div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -551,6 +559,7 @@
                 document.getElementById('web-port').value = currentConfig.web.port || 3000;
                 document.getElementById('web-enable-ui').checked = currentConfig.web.enable_ui !== false;
                 document.getElementById('web-theme').value = currentConfig.web.theme || 'auto';
+                document.getElementById('web-dogfood').checked = currentConfig.web.dogfood || false;
             }
             
             // Populate logging config
@@ -586,7 +595,8 @@
                 web: {
                     port: parseInt(document.getElementById('web-port').value),
                     enable_ui: document.getElementById('web-enable-ui').checked,
-                    theme: document.getElementById('web-theme').value
+                    theme: document.getElementById('web-theme').value,
+                    dogfood: document.getElementById('web-dogfood').checked
                 },
                 logging: {
                     level: document.getElementById('logging-level').value,

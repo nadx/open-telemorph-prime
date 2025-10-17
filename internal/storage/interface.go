@@ -20,4 +20,7 @@ type Storage interface {
 	// Cleanup
 	CleanupOldData() error
 	Close() error
+
+	// System info
+	GetDatabasePath() string
 }

@@ -1,8 +1,12 @@
 package web
 
 import (
+	"fmt"
 	"net/http"
+	"os"
+	"runtime"
 	"strconv"
+	"time"
 
 	"open-telemorph-prime/internal/config"
 	"open-telemorph-prime/internal/storage"
@@ -11,16 +15,18 @@ import (
 )
 
 type Service struct {
-	storage storage.Storage
-	config  config.WebConfig
-	version string
+	storage   storage.Storage
+	config    config.WebConfig
+	version   string
+	startTime time.Time
 }
 
 func NewService(storage storage.Storage, config config.WebConfig, version string) *Service {
 	return &Service{
-		storage: storage,
-		config:  config,
-		version: version,
+		storage:   storage,
+		config:    config,
+		version:   version,
+		startTime: time.Now(),
 	}
 }
 
@@ -231,6 +237,7 @@ func (s *Service) GetConfig(c *gin.Context) {
 			"port":      3000,
 			"enable_ui": true,
 			"theme":     "auto",
+			"dogfood":   s.config.Dogfood,
 		},
 		"logging": gin.H{
 			"level":       "info",
@@ -252,11 +259,65 @@ func (s *Service) SaveConfig(c *gin.Context) {
 }
 
 func (s *Service) GetSystemStatus(c *gin.Context) {
-	// TODO: Implement system status retrieval
+	// Calculate uptime
+	uptime := time.Since(s.startTime)
+	uptimeStr := formatDuration(uptime)
+
+	// Get memory usage
+	var m runtime.MemStats
+	runtime.ReadMemStats(&m)
+	memoryUsage := formatBytes(m.Alloc)
+
+	// Get storage usage
+	storageUsed := s.getStorageUsage()
+
 	c.JSON(http.StatusOK, gin.H{
-		"uptime":       "2h 15m 30s",
-		"memory_usage": "45.2 MB",
-		"storage_used": "128.5 MB",
+		"uptime":       uptimeStr,
+		"memory_usage": memoryUsage,
+		"storage_used": storageUsed,
 		"status":       "healthy",
 	})
+}
+
+// formatDuration formats a duration into a human-readable string
+func formatDuration(d time.Duration) string {
+	if d < time.Minute {
+		return fmt.Sprintf("%.0fs", d.Seconds())
+	} else if d < time.Hour {
+		minutes := int(d.Minutes())
+		seconds := int(d.Seconds()) % 60
+		return fmt.Sprintf("%dm %ds", minutes, seconds)
+	} else {
+		hours := int(d.Hours())
+		minutes := int(d.Minutes()) % 60
+		return fmt.Sprintf("%dh %dm", hours, minutes)
+	}
+}
+
+// formatBytes formats bytes into a human-readable string
+func formatBytes(bytes uint64) string {
+	const unit = 1024
+	if bytes < unit {
+		return fmt.Sprintf("%d B", bytes)
+	}
+	div, exp := int64(unit), 0
+	for n := bytes / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %cB", float64(bytes)/float64(div), "KMGTPE"[exp])
+}
+
+// getStorageUsage calculates the storage usage of the database
+func (s *Service) getStorageUsage() string {
+	// Get the database path from storage
+	dbPath := s.storage.GetDatabasePath()
+
+	// Try to get file info for the database
+	if fileInfo, err := os.Stat(dbPath); err == nil {
+		return formatBytes(uint64(fileInfo.Size()))
+	}
+
+	// Fallback if we can't get the file size
+	return "Unknown"
 }

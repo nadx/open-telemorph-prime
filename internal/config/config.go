@@ -43,6 +43,7 @@ type WebConfig struct {
 	Enabled bool   `yaml:"enabled"`
 	Title   string `yaml:"title"`
 	Theme   string `yaml:"theme"`
+	Dogfood bool   `yaml:"dogfood"`
 }
 
 type LoggingConfig struct {
@@ -178,6 +179,7 @@ func DefaultConfig() *Config {
 			Enabled: true,
 			Title:   "Open-Telemorph-Prime",
 			Theme:   "light",
+			Dogfood: false,
 		},
 		Logging: LoggingConfig{
 			Level:  "info",
