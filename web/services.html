@@ -69,13 +69,7 @@
                 <nav class="sidebar-nav">
                     <div class="sidebar-header">
                         <div class="brand">
-                            <svg class="brand-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-                            </svg>
-                            <div class="brand-text">
-                                <h1>Telemorph</h1>
-                                <p>Observability Platform</p>
-                            </div>
+                            <img src="/telemorph-prime-logo-white.png" alt="Telemorph" class="brand-logo" style="height: 32px; width: auto;">
                         </div>
                     </div>
                     
@@ -188,13 +182,13 @@
                                         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                                     </svg>
                                 </div>
-                                <div id="total-services" class="metric-card-value">-</div>
-                                <div class="metric-card-change positive">
+                                <div id="total-services" class="metric-card-value">1</div>
+                                <div class="metric-card-change neutral">
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
                                         <polyline points="17 6 23 6 23 12"></polyline>
                                     </svg>
-                                    +2 this week
+                                    <span id="total-services-change">No change</span>
                                 </div>
                             </div>
                             
@@ -206,13 +200,13 @@
                                         <polyline points="22,4 12,14.01 9,11.01"></polyline>
                                     </svg>
                                 </div>
-                                <div id="healthy-services" class="metric-card-value">-</div>
+                                <div id="healthy-services" class="metric-card-value">1</div>
                                 <div class="metric-card-change positive">
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
                                         <polyline points="17 6 23 6 23 12"></polyline>
                                     </svg>
-                                    100% uptime
+                                    <span id="uptime-change">100% uptime</span>
                                 </div>
                             </div>
                             
@@ -225,13 +219,13 @@
                                         <line x1="9" y1="9" x2="15" y2="15"></line>
                                     </svg>
                                 </div>
-                                <div id="error-rate" class="metric-card-value">-</div>
-                                <div class="metric-card-change negative">
+                                <div id="error-rate" class="metric-card-value">0%</div>
+                                <div class="metric-card-change neutral">
                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
                                         <polyline points="17 18 23 18 23 12"></polyline>
                                     </svg>
-                                    +0.2% from last hour
+                                    <span id="error-rate-change">No change</span>
                                 </div>
                             </div>
                         </div>
@@ -265,9 +259,35 @@
                                         </thead>
                                         <tbody id="services-table-body">
                                             <tr>
-                                                <td colspan="7" class="loading">
-                                                    <div class="loading-spinner"></div>
-                                                    Loading services...
+                                                <td>
+                                                    <div class="service-name">open-telemorph-prime</div>
+                                                    <div class="service-version">v0.2.1</div>
+                                                </td>
+                                                <td>
+                                                    <div class="status-badge online">
+                                                        <div class="status-dot"></div>
+                                                        <span>Online</span>
+                                                    </div>
+                                                </td>
+                                                <td>100%</td>
+                                                <td>&lt;10ms</td>
+                                                <td>0%</td>
+                                                <td>Just now</td>
+                                                <td>
+                                                    <div class="table-actions">
+                                                        <button class="table-action" title="View Details" onclick="viewServiceDetails('open-telemorph-prime')">
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                                <circle cx="12" cy="12" r="3"></circle>
+                                                            </svg>
+                                                        </button>
+                                                        <button class="table-action" title="View Metrics" onclick="viewServiceMetrics('open-telemorph-prime')">
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                <path d="M3 3v18h18"></path>
+                                                                <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -283,79 +303,17 @@
 
     <script src="/static/app.js"></script>
     <script>
-        // Services-specific JavaScript
-        async function loadServicesData() {
-            try {
-                const response = await fetch('/api/v1/services');
-                if (response.ok) {
-                    const services = await response.json();
-                    displayServices(services);
-                    updateServiceStats(services);
-                } else {
-                    console.error('Failed to load services');
-                }
-            } catch (error) {
-                console.error('Error loading services:', error);
-            }
+        function viewServiceDetails(serviceName) {
+            console.log('Viewing service details:', serviceName);
+            // TODO: Implement service details view
+            alert(`Service details for ${serviceName} - Feature coming soon!`);
         }
 
-        function displayServices(services) {
-            const tbody = document.getElementById('services-table-body');
-            if (!tbody) return;
-
-            if (services.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="text-center">No services found</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = services.map(service => `
-                <tr>
-                    <td>
-                        <div class="service-name">${service.name || 'Unknown'}</div>
-                        <div class="service-version">v${service.version || '1.0.0'}</div>
-                    </td>
-                    <td>
-                        <div class="status-badge ${service.status || 'offline'}">
-                            <div class="status-dot"></div>
-                            <span>${service.status || 'Offline'}</span>
-                        </div>
-                    </td>
-                    <td>${service.uptime || '0%'}</td>
-                    <td>${service.responseTime || '0ms'}</td>
-                    <td>${service.errorRate || '0%'}</td>
-                    <td>${service.lastSeen || 'Never'}</td>
-                    <td>
-                        <div class="table-actions">
-                            <button class="table-action" title="View Details">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                    <circle cx="12" cy="12" r="3"></circle>
-                                </svg>
-                            </button>
-                            <button class="table-action" title="Edit Service">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
+        function viewServiceMetrics(serviceName) {
+            console.log('Viewing service metrics:', serviceName);
+            // Navigate to metrics page with service filter
+            window.location.href = `/metrics?service=${encodeURIComponent(serviceName)}`;
         }
-
-        function updateServiceStats(services) {
-            const totalServices = services.length;
-            const healthyServices = services.filter(s => s.status === 'online' || s.status === 'healthy').length;
-            const errorRate = services.length > 0 ? 
-                (services.reduce((sum, s) => sum + (parseFloat(s.errorRate) || 0), 0) / services.length).toFixed(2) + '%' : '0%';
-
-            document.getElementById('total-services').textContent = totalServices;
-            document.getElementById('healthy-services').textContent = healthyServices;
-            document.getElementById('error-rate').textContent = errorRate;
-        }
-
-        document.addEventListener('DOMContentLoaded', loadServicesData);
     </script>
 </body>
 </html>
