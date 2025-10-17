@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"open-telemorph-prime/internal/config"
+	"open-telemorph-prime/internal/dogfood"
 	"open-telemorph-prime/internal/ingestion"
 	"open-telemorph-prime/internal/storage"
 	"open-telemorph-prime/internal/web"
@@ -46,6 +47,9 @@ func main() {
 	// Initialize web service
 	webService := web.NewService(storage, cfg.Web, version)
 
+	// Initialize dogfood service
+	dogfoodService := dogfood.NewService(cfg.Web, storage, cfg.Server.Port)
+
 	// Set up Gin router
 	if cfg.Server.Environment == "production" {
 		gin.SetMode(gin.ReleaseMode)
@@ -60,7 +64,7 @@ func main() {
 	router.LoadHTMLGlob("web/*.html")
 
 	// Register routes
-	registerRoutes(router, ingestionService, webService)
+	registerRoutes(router, ingestionService, webService, dogfoodService)
 
 	// Create HTTP server
 	server := &http.Server{
@@ -75,6 +79,12 @@ func main() {
 		if err := ingestionService.Start(); err != nil {
 			log.Fatalf("Failed to start ingestion service: %v", err)
 		}
+	}()
+
+	// Start dogfood service
+	go func() {
+		ctx := context.Background()
+		dogfoodService.Start(ctx)
 	}()
 
 	// Start HTTP server
@@ -108,7 +118,7 @@ func main() {
 	log.Println("Open-Telemorph-Prime stopped")
 }
 
-func registerRoutes(router *gin.Engine, ingestionService *ingestion.Service, webService *web.Service) {
+func registerRoutes(router *gin.Engine, ingestionService *ingestion.Service, webService *web.Service, dogfoodService *dogfood.Service) {
 	// Health endpoints
 	router.GET("/health", healthCheck)
 	router.GET("/ready", readinessCheck)
@@ -129,6 +139,20 @@ func registerRoutes(router *gin.Engine, ingestionService *ingestion.Service, web
 		admin.GET("/config", webService.GetConfig)
 		admin.POST("/config", webService.SaveConfig)
 		admin.GET("/status", webService.GetSystemStatus)
+		admin.GET("/dogfood", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{"enabled": dogfoodService.IsEnabled()})
+		})
+		admin.POST("/dogfood", func(c *gin.Context) {
+			var req struct {
+				Enabled bool `json:"enabled"`
+			}
+			if err := c.ShouldBindJSON(&req); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+			}
+			dogfoodService.SetEnabled(req.Enabled)
+			c.JSON(http.StatusOK, gin.H{"message": "Dogfood mode updated", "enabled": req.Enabled})
+		})
 	}
 
 	// OTLP endpoints are now served on dedicated ingestion ports (4317/4318)

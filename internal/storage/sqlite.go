@@ -345,3 +345,8 @@ func (s *SQLiteStorage) CleanupOldData() error {
 
 	return nil
 }
+
+// GetDatabasePath returns the path to the database file
+func (s *SQLiteStorage) GetDatabasePath() string {
+	return s.config.Path
+}
