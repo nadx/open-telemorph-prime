@@ -5,22 +5,21 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"net"
 	"net/http"
 	"time"
 
 	"open-telemorph-prime/internal/config"
+	otlpgrpc "open-telemorph-prime/internal/grpc"
 	"open-telemorph-prime/internal/storage"
 
 	"github.com/gin-gonic/gin"
-	"google.golang.org/grpc"
 )
 
 type Service struct {
 	storage    storage.Storage
 	config     config.IngestionConfig
 	httpServer *http.Server
-	grpcServer *grpc.Server
+	grpcServer *otlpgrpc.Server
 }
 
 func NewService(storage storage.Storage, config config.IngestionConfig) *Service {
@@ -77,25 +76,11 @@ func (s *Service) startHTTPServer() {
 }
 
 func (s *Service) startGRPCServer() {
-	// Create a listener on the gRPC port
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", s.config.GRPCPort))
-	if err != nil {
-		log.Printf("Failed to listen on gRPC port %d: %v", s.config.GRPCPort, err)
-		return
-	}
+	// Create our custom gRPC server with all OTLP services registered
+	s.grpcServer = otlpgrpc.NewServer(s.storage, s.config.GRPCPort)
 
-	// Create gRPC server
-	s.grpcServer = grpc.NewServer()
-
-	// TODO: Register OTLP gRPC services here
-	// For now, we'll just start the server without any services
-	// In a full implementation, you would register:
-	// - traceservice.RegisterTraceServiceServer(s.grpcServer, s)
-	// - metricsservice.RegisterMetricsServiceServer(s.grpcServer, s)
-	// - logsservice.RegisterLogsServiceServer(s.grpcServer, s)
-
-	log.Printf("Starting OTLP gRPC server on port %d", s.config.GRPCPort)
-	if err := s.grpcServer.Serve(lis); err != nil {
+	// Start the server
+	if err := s.grpcServer.Start(); err != nil {
 		log.Printf("Failed to start gRPC server: %v", err)
 	}
 }
@@ -112,7 +97,7 @@ func (s *Service) Stop(ctx context.Context) error {
 
 	// Shutdown gRPC server
 	if s.grpcServer != nil {
-		s.grpcServer.GracefulStop()
+		s.grpcServer.Stop()
 	}
 
 	return nil
