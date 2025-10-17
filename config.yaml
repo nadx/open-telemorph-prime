@@ -24,7 +24,7 @@ web:
   enabled: true
   title: "Open-Telemorph-Prime"
   theme: "light"
-  dogfood: false
+  dogfood: true
 
 logging:
   level: "info"

@@ -160,6 +160,7 @@ func registerRoutes(router *gin.Engine, ingestionService *ingestion.Service, web
 
 	// Web UI
 	router.Static("/static", "./web/static")
+	router.StaticFile("/telemorph-prime-logo-white.png", "./web/telemorph-prime-logo-white.png")
 	router.GET("/", webService.Index)
 	router.GET("/dashboard", webService.Dashboard)
 	router.GET("/metrics", webService.MetricsPage)
