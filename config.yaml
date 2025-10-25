@@ -30,3 +30,4 @@ logging:
   level: "info"
   format: "json"
   file_path: ""
+

@@ -1903,3 +1903,45 @@ body {
 .app-main::-webkit-scrollbar-thumb:hover {
   background: rgb(var(--muted-foreground));
 }
+
+/* Query Result Header */
+.query-result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background: rgb(var(--muted) / 0.5);
+  border-radius: var(--radius);
+  border: 1px solid rgb(var(--border));
+}
+
+.query-result-header h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: rgb(var(--foreground));
+}
+
+.result-count {
+  font-size: 0.875rem;
+  color: rgb(var(--muted-foreground));
+  background: rgb(var(--accent) / 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: calc(var(--radius) / 2);
+  border: 1px solid rgb(var(--accent) / 0.2);
+}
+
+/* PromQL Result Styling */
+.data-table code {
+  background: rgb(var(--muted) / 0.5);
+  padding: 0.125rem 0.25rem;
+  border-radius: calc(var(--radius) / 2);
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.875rem;
+}
+
+.data-table strong {
+  font-weight: 600;
+  color: rgb(var(--accent));
+}

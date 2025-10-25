@@ -418,7 +418,25 @@
         function displayQueryResults(results) {
             const resultsDiv = document.getElementById('query-results');
             
-            if (!results || results.length === 0) {
+            // Handle different response formats
+            let dataToDisplay = null;
+            let resultType = 'unknown';
+            
+            if (results && results.data) {
+                // PromQL response format
+                dataToDisplay = results.data.result || [];
+                resultType = results.data.resultType || 'unknown';
+            } else if (Array.isArray(results)) {
+                // Array format (legacy)
+                dataToDisplay = results;
+                resultType = 'array';
+            } else if (results && results.data && Array.isArray(results.data)) {
+                // Direct data array
+                dataToDisplay = results.data;
+                resultType = 'array';
+            }
+            
+            if (!dataToDisplay || dataToDisplay.length === 0) {
                 resultsDiv.innerHTML = `
                     <div class="no-results">
                         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
@@ -432,25 +450,119 @@
                 return;
             }
             
-            // Display results in a table
-            const table = `
-                <div class="data-table">
-                    <thead>
-                        <tr>
-                            ${Object.keys(results[0]).map(key => `<th>${key}</th>`).join('')}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${results.map(row => `
+            // Handle PromQL vector results
+            if (resultType === 'vector' && dataToDisplay.length > 0) {
+                const promqlTable = `
+                    <div class="query-result-header">
+                        <h3>Query Results (${resultType})</h3>
+                        <span class="result-count">${dataToDisplay.length} series</span>
+                    </div>
+                    <div class="data-table">
+                        <thead>
                             <tr>
-                                ${Object.values(row).map(value => `<td>${value}</td>`).join('')}
+                                <th>Metric</th>
+                                <th>Labels</th>
+                                <th>Value</th>
+                                <th>Timestamp</th>
                             </tr>
-                        `).join('')}
-                    </tbody>
-                </div>
-            `;
+                        </thead>
+                        <tbody>
+                            ${dataToDisplay.map(series => {
+                                const metricName = series.metric && series.metric.__name__ ? series.metric.__name__ : 'unknown';
+                                const labels = series.metric ? Object.entries(series.metric)
+                                    .filter(([key]) => key !== '__name__')
+                                    .map(([key, value]) => `${key}="${value}"`)
+                                    .join(', ') : '';
+                                const latestValue = series.values && series.values.length > 0 ? series.values[series.values.length - 1] : [0, 0];
+                                const timestamp = new Date(latestValue[0] * 1000).toLocaleString();
+                                const value = latestValue[1];
+                                
+                                return `
+                                    <tr>
+                                        <td><code>${metricName}</code></td>
+                                        <td><code>${labels || '{}'}</code></td>
+                                        <td><strong>${value}</strong></td>
+                                        <td>${timestamp}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </div>
+                `;
+                resultsDiv.innerHTML = promqlTable;
+                return;
+            }
             
-            resultsDiv.innerHTML = table;
+            // Handle matrix results (time series)
+            if (resultType === 'matrix' && dataToDisplay.length > 0) {
+                const matrixTable = `
+                    <div class="query-result-header">
+                        <h3>Query Results (${resultType})</h3>
+                        <span class="result-count">${dataToDisplay.length} series</span>
+                    </div>
+                    <div class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Labels</th>
+                                <th>Data Points</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${dataToDisplay.map(series => {
+                                const metricName = series.metric && series.metric.__name__ ? series.metric.__name__ : 'unknown';
+                                const labels = series.metric ? Object.entries(series.metric)
+                                    .filter(([key]) => key !== '__name__')
+                                    .map(([key, value]) => `${key}="${value}"`)
+                                    .join(', ') : '';
+                                const dataPoints = series.values ? series.values.length : 0;
+                                
+                                return `
+                                    <tr>
+                                        <td><code>${metricName}</code></td>
+                                        <td><code>${labels || '{}'}</code></td>
+                                        <td>${dataPoints} points</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </div>
+                `;
+                resultsDiv.innerHTML = matrixTable;
+                return;
+            }
+            
+            // Fallback to generic table display
+            if (dataToDisplay.length > 0 && typeof dataToDisplay[0] === 'object') {
+                const table = `
+                    <div class="query-result-header">
+                        <h3>Query Results</h3>
+                        <span class="result-count">${dataToDisplay.length} results</span>
+                    </div>
+                    <div class="data-table">
+                        <thead>
+                            <tr>
+                                ${Object.keys(dataToDisplay[0]).map(key => `<th>${key}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${dataToDisplay.map(row => `
+                                <tr>
+                                    ${Object.values(row).map(value => `<td>${JSON.stringify(value)}</td>`).join('')}
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </div>
+                `;
+                resultsDiv.innerHTML = table;
+            } else {
+                resultsDiv.innerHTML = `
+                    <div class="no-results">
+                        <h3>No Results Found</h3>
+                        <p>Query returned no data</p>
+                    </div>
+                `;
+            }
         }
 
         function addToHistory(query, type, results) {
@@ -542,3 +654,4 @@
     </script>
 </body>
 </html>
+

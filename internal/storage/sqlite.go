@@ -350,3 +350,7 @@ func (s *SQLiteStorage) CleanupOldData() error {
 func (s *SQLiteStorage) GetDatabasePath() string {
 	return s.config.Path
 }
+
+func (s *SQLiteStorage) GetDB() *sql.DB {
+	return s.db
+}

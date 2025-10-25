@@ -14,6 +14,7 @@ import (
 	"open-telemorph-prime/internal/config"
 	"open-telemorph-prime/internal/dogfood"
 	"open-telemorph-prime/internal/ingestion"
+	"open-telemorph-prime/internal/query"
 	"open-telemorph-prime/internal/storage"
 	"open-telemorph-prime/internal/web"
 
@@ -50,6 +51,9 @@ func main() {
 	// Initialize dogfood service
 	dogfoodService := dogfood.NewService(cfg.Web, storage, cfg.Server.Port)
 
+	// Initialize query service
+	queryService := query.NewService(storage.GetDB())
+
 	// Set up Gin router
 	if cfg.Server.Environment == "production" {
 		gin.SetMode(gin.ReleaseMode)
@@ -64,7 +68,7 @@ func main() {
 	router.LoadHTMLGlob("web/*.html")
 
 	// Register routes
-	registerRoutes(router, ingestionService, webService, dogfoodService)
+	registerRoutes(router, ingestionService, webService, dogfoodService, queryService)
 
 	// Create HTTP server
 	server := &http.Server{
@@ -118,7 +122,7 @@ func main() {
 	log.Println("Open-Telemorph-Prime stopped")
 }
 
-func registerRoutes(router *gin.Engine, ingestionService *ingestion.Service, webService *web.Service, dogfoodService *dogfood.Service) {
+func registerRoutes(router *gin.Engine, ingestionService *ingestion.Service, webService *web.Service, dogfoodService *dogfood.Service, queryService *query.Service) {
 	// Health endpoints
 	router.GET("/health", healthCheck)
 	router.GET("/ready", readinessCheck)
@@ -131,6 +135,9 @@ func registerRoutes(router *gin.Engine, ingestionService *ingestion.Service, web
 		api.GET("/logs", webService.GetLogs)
 		api.GET("/services", webService.GetServices)
 		api.POST("/query", webService.Query)
+
+		// Query service routes
+		queryService.RegisterRoutes(api)
 	}
 
 	// Admin API routes
