@@ -99,10 +99,12 @@ func (s *Service) GetServices(c *gin.Context) {
 
 func (s *Service) Query(c *gin.Context) {
 	var queryReq struct {
-		Type   string `json:"type" binding:"required"`
-		Query  string `json:"query" binding:"required"`
-		Limit  int    `json:"limit"`
-		Offset int    `json:"offset"`
+		Type      string `json:"type" binding:"required"`
+		Query     string `json:"query" binding:"required"`
+		Limit     int    `json:"limit"`
+		Offset    int    `json:"offset"`
+		TimeRange string `json:"timeRange"`
+		Step      string `json:"step"`
 	}
 
 	if err := c.ShouldBindJSON(&queryReq); err != nil {
@@ -114,7 +116,26 @@ func (s *Service) Query(c *gin.Context) {
 		queryReq.Limit = 100
 	}
 
+	// Convert to QueryRequest type
+	req := QueryRequest{
+		Type:      queryReq.Type,
+		Query:     queryReq.Query,
+		Limit:     queryReq.Limit,
+		Offset:    queryReq.Offset,
+		TimeRange: queryReq.TimeRange,
+		Step:      queryReq.Step,
+	}
+
 	switch queryReq.Type {
+	case "promql":
+		// Route PromQL queries to the new query service
+		s.handlePromQLQuery(c, req)
+	case "logql":
+		// Route LogQL queries to the new query service
+		s.handleLogQLQuery(c, req)
+	case "traceql":
+		// Route TraceQL queries to the new query service
+		s.handleTraceQLQuery(c, req)
 	case "metrics":
 		metrics, err := s.storage.GetMetrics(queryReq.Limit, queryReq.Offset)
 		if err != nil {
@@ -139,6 +160,61 @@ func (s *Service) Query(c *gin.Context) {
 	default:
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid query type"})
 	}
+}
+
+// QueryRequest represents a query request
+type QueryRequest struct {
+	Type      string `json:"type"`
+	Query     string `json:"query"`
+	Limit     int    `json:"limit"`
+	Offset    int    `json:"offset"`
+	TimeRange string `json:"timeRange"`
+	Step      string `json:"step"`
+}
+
+// handlePromQLQuery handles PromQL queries by forwarding to the query service
+func (s *Service) handlePromQLQuery(c *gin.Context, queryReq QueryRequest) {
+	// For now, return a simple response indicating PromQL is not fully implemented
+	// In a full implementation, this would forward to the query service
+	c.JSON(http.StatusOK, gin.H{
+		"status": "success",
+		"data": gin.H{
+			"resultType": "vector",
+			"result": []gin.H{
+				{
+					"metric": gin.H{
+						"__name__": queryReq.Query,
+					},
+					"values": [][]interface{}{
+						{float64(time.Now().Unix()), 0.0},
+					},
+				},
+			},
+		},
+		"message": "PromQL query received - full implementation in progress",
+	})
+}
+
+// handleLogQLQuery handles LogQL queries
+func (s *Service) handleLogQLQuery(c *gin.Context, queryReq QueryRequest) {
+	c.JSON(http.StatusOK, gin.H{
+		"status": "success",
+		"data": gin.H{
+			"message": "LogQL queries not yet implemented",
+			"query":   queryReq.Query,
+		},
+	})
+}
+
+// handleTraceQLQuery handles TraceQL queries
+func (s *Service) handleTraceQLQuery(c *gin.Context, queryReq QueryRequest) {
+	c.JSON(http.StatusOK, gin.H{
+		"status": "success",
+		"data": gin.H{
+			"message": "TraceQL queries not yet implemented",
+			"query":   queryReq.Query,
+		},
+	})
 }
 
 // Web UI handlers

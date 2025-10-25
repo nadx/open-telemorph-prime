@@ -80,17 +80,21 @@ Open-Telemorph-Prime prioritizes:
 
 ## Project Phases
 
-### Phase 1: Minimal Ingestion and Storage (Weeks 1-3)
+### Phase 1: Minimal Ingestion and Storage (Weeks 1-3) ✅ COMPLETED
 **Goal**: Create a single binary that can ingest and store telemetry data
 
 #### Deliverables:
 - ✅ Single Go binary with embedded web UI
-- ✅ OTLP gRPC and HTTP receivers
-- ✅ SQLite storage with basic schema
+- ✅ OTLP gRPC and HTTP receivers (ports 4317/4318)
+- ✅ SQLite storage with basic schema (using modernc.org/sqlite)
 - ✅ Simple REST API for data retrieval
 - ✅ Basic web interface for data exploration
 - ✅ Health check endpoints
 - ✅ Configuration file support
+- ✅ Docker support with parametric Go versions
+- ✅ Dogfood feature for self-monitoring
+- ✅ Dynamic system metrics in Admin UI
+- ✅ Services page with real-time data
 
 #### Architecture:
 ```
@@ -204,15 +208,22 @@ logging:
 
 ---
 
-### Phase 2: Inline Query API (Weeks 4-5)
+### Phase 2: Inline Query API (Weeks 4-5) 🚧 IN PROGRESS
 **Goal**: Add comprehensive querying capabilities
 
 #### Deliverables:
-- Basic PromQL support for metrics
-- Simple log query language
-- Trace filtering and search
-- Query result caching
-- Export functionality (JSON, CSV)
+- 🚧 Basic PromQL support for metrics
+- 📋 Simple log query language
+- 📋 Trace filtering and search
+- 📋 Query result caching
+- 📋 Export functionality (JSON, CSV)
+
+#### Implementation Status:
+- 🚧 **PromQL Parser**: Starting implementation
+- 📋 **Log Query Language**: Planned
+- 📋 **Trace Filtering**: Planned
+- 📋 **Query Caching**: Planned
+- 📋 **Export Functions**: Planned
 
 #### Query Language Support:
 
@@ -620,10 +631,37 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ## Roadmap Status
 
-- ✅ **Phase 1**: Minimal Ingestion and Storage (Planned)
-- 📋 **Phase 2**: Inline Query API (Planned)
+- ✅ **Phase 1**: Minimal Ingestion and Storage (COMPLETED)
+- 🚧 **Phase 2**: Inline Query API (IN PROGRESS)
 - 📋 **Phase 3**: Basic Frontend (Planned)
 - 📋 **Phase 4**: Optional Advanced Features (Planned)
+
+### Current Focus: Phase 2 - Query API Implementation
+
+**Immediate Next Steps:**
+1. **PromQL Parser Implementation** - Core metrics query language
+2. **Log Query Language** - Service, level, and text filtering
+3. **Trace Filtering** - Duration, status, and service filtering
+4. **Query API Endpoints** - RESTful query interfaces
+5. **Export Functionality** - JSON/CSV data export
+
+**Files to Create:**
+```
+internal/query/
+├── promql/
+│   ├── parser.go          # PromQL query parser
+│   ├── evaluator.go       # Query evaluation
+│   └── functions.go       # Rate, sum, avg functions
+├── logs/
+│   ├── parser.go          # Log query parser
+│   └── evaluator.go       # Log query evaluation
+├── traces/
+│   ├── parser.go          # Trace query parser
+│   └── evaluator.go       # Trace query evaluation
+└── export/
+    ├── json.go            # JSON export
+    └── csv.go             # CSV export
+```
 
 ---
 

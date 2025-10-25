@@ -1,5 +1,7 @@
 package storage
 
+import "database/sql"
+
 // Storage interface defines the contract for data storage
 type Storage interface {
 	// Metrics
@@ -23,4 +25,7 @@ type Storage interface {
 
 	// System info
 	GetDatabasePath() string
+
+	// Database access for query service
+	GetDB() *sql.DB
 }
